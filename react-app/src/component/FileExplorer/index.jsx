@@ -1,92 +1,90 @@
 import React from "react";
-import VsCodePanel from "./VsCodePanel";
-
+import FileList from "./FileList";
+const dataSet = [
+  {
+    id: 1,
+    name: "Men",
+    children: [],
+  },
+  {
+    id: 2,
+    name: "Women",
+    children: [
+      {
+        id: 3,
+        name: "Item 1",
+        children: [
+          {
+            id: 4,
+            name: "Dress",
+            children: [],
+          },
+          {
+            id: 5,
+            name: "Shoes",
+            children: [],
+          },
+          {
+            id: 6,
+            name: "Toys",
+            children: [
+              {
+                id: 7,
+                name: "Toy 1",
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 8,
+        name: "Item 2",
+        children: [
+          {
+            id: 9,
+            name: "Folder 1",
+            children: [],
+          },
+          {
+            id: 10,
+            name: "Folder 2",
+            children: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 11,
+    name: "Child",
+    children: [
+      {
+        id: 12,
+        name: "Item 2",
+        children: [
+          {
+            id: 13,
+            name: "Kurtis",
+            children: [],
+          },
+          {
+            id: 14,
+            name: "Frocks",
+            children: [],
+          },
+          {
+            id: 15,
+            name: "Shoes",
+            children: [],
+          },
+        ],
+      },
+    ],
+  },
+];
 const FileExplorer = () => {
-  const dataSet = [
-    {
-      id: 1,
-      name: "Men",
-      children: [],
-    },
-    {
-      id: 2,
-      name: "Women",
-      children: [
-        {
-          id: 1,
-          name: "Item 1",
-          children: [
-            {
-              id: 1,
-              name: "Dress",
-              children: [],
-            },
-            {
-              id: 2,
-              name: "Shoes",
-              children: [],
-            },
-            {
-              id: 3,
-              name: "Toys",
-              children: [
-                {
-                  id: 1,
-                  name: "Toy 1",
-                  children: [],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          id: 2,
-          name: "Item 2",
-          children: [
-            {
-              id: 1,
-              name: "Folder 1",
-              children: [],
-            },
-            {
-              id: 2,
-              name: "Folder 2",
-              children: [],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Child",
-      children: [
-        {
-          id: 1,
-          name: "Item 2",
-          children: [
-            {
-              id: 1,
-              name: "Kurtis",
-              children: [],
-            },
-            {
-              id: 2,
-              name: "Frocks",
-              children: [],
-            },
-            {
-              id: 3,
-              name: "Shoes",
-              children: [],
-            },
-          ],
-        },
-      ],
-    },
-  ];
-
-  return <VsCodePanel dataSet={dataSet} />;
+  return <FileList dataSet={dataSet} />;
 };
 
 export default FileExplorer;
