@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import "./style.css";
+import React, { useEffect, useState, useCallback } from "react";
 
 const initialData = {
   tasks: [],
@@ -10,35 +9,101 @@ const initialData = {
   },
 };
 
-const Task = ({ task, index, boardId, onDragStart, onDragOver, onDrop }) => (
+const KanbanBoard = () => {
+  const [data, setData] = useState(() => {
+    const savedData = localStorage.getItem("kanbanData");
+    return savedData ? JSON.parse(savedData) : initialData;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("kanbanData", JSON.stringify(data));
+  }, [data]);
+
+  const addTask = useCallback((content) => {
+    setData((prevData) => {
+      const newTask = { id: `task-${Date.now()}`, content };
+      return {
+        tasks: [...prevData.tasks, newTask],
+        boards: {
+          ...prevData.boards,
+          todo: [...prevData.boards.todo, newTask.id],
+        },
+      };
+    });
+  }, []);
+
+  const onDragStart = (e, boardId, taskId) => {
+    e.dataTransfer.setData("taskId", taskId);
+    e.dataTransfer.setData("sourceBoardId", boardId);
+  };
+
+  const onDrop = (e, targetBoardId) => {
+    const taskId = e.dataTransfer.getData("taskId");
+    const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
+
+    if (!taskId || sourceBoardId === targetBoardId) return;
+
+    setData((prevData) => {
+      const newBoards = { ...prevData.boards };
+      newBoards[sourceBoardId] = newBoards[sourceBoardId].filter(
+        (id) => id !== taskId
+      );
+      newBoards[targetBoardId] = [...newBoards[targetBoardId], taskId];
+      return { ...prevData, boards: newBoards };
+    });
+  };
+
+  const getTasksForBoard = (boardId) =>
+    data.boards[boardId].map((taskId) =>
+      data.tasks.find((task) => task.id === taskId)
+    );
+
+  return (
+    <div style={styles.container}>
+      <h1>Kanban Board</h1>
+      <TaskForm addTask={addTask} />
+      <div style={styles.boardContainer}>
+        {Object.keys(data.boards).map((boardId) => (
+          <Board
+            key={boardId}
+            title={boardId
+              .replace(/([A-Z])/g, " $1")
+              .replace(/^./, (str) => str.toUpperCase())}
+            tasks={getTasksForBoard(boardId)}
+            boardId={boardId}
+            onDragStart={onDragStart}
+            onDrop={onDrop}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const Task = ({ task, boardId, onDragStart }) => (
   <div
-    className="task"
+    style={styles.task}
     draggable
-    onDragStart={(e) => onDragStart(e, boardId, index)}
-    onDragOver={(e) => onDragOver(e, boardId, index)}
-    onDrop={(e) => onDrop(e, boardId, index)}
+    onDragStart={(e) => onDragStart(e, boardId, task.id)}
   >
     {task.content}
   </div>
 );
 
-const Board = ({ title, tasks, boardId, onDragStart, onDragOver, onDrop }) => (
+const Board = ({ title, tasks, boardId, onDragStart, onDrop }) => (
   <div
-    className="board"
-    onDragOver={(e) => onDragOver(e, boardId, tasks.length)}
-    onDrop={(e) => onDrop(e, boardId, tasks.length)}
+    style={styles.board}
+    onDragOver={(e) => e.preventDefault()}
+    onDrop={(e) => onDrop(e, boardId)}
   >
     <h3>{title}</h3>
-    <div className="task-list">
-      {tasks.map((task, index) => (
+    <div style={styles.boardContent}>
+      {tasks.map((task) => (
         <Task
           key={task.id}
           task={task}
-          index={index}
           boardId={boardId}
           onDragStart={onDragStart}
-          onDragOver={onDragOver}
-          onDrop={onDrop}
         />
       ))}
     </div>
@@ -56,107 +121,52 @@ const TaskForm = ({ addTask }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={styles.form}>
       <input
         type="text"
         value={taskContent}
         onChange={(e) => setTaskContent(e.target.value)}
         placeholder="Add a new task"
+        style={styles.input}
       />
-      <button type="submit">Add Task</button>
+      <button type="submit" style={styles.button}>
+        Add Task
+      </button>
     </form>
   );
 };
 
-const KanbanBoard = () => {
-  const [data, setData] = useState(() => {
-    const savedData = localStorage.getItem("kanbanData");
-    return savedData ? JSON.parse(savedData) : initialData;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("kanbanData", JSON.stringify(data));
-  }, [data]);
-
-  const addTask = (content) => {
-    const newTask = { id: `task-${Date.now()}`, content };
-    setData((prevData) => ({
-      tasks: [...prevData.tasks, newTask],
-      boards: {
-        ...prevData.boards,
-        todo: [...prevData.boards.todo, newTask.id],
-      },
-    }));
-  };
-
-  const onDragStart = (e, boardId, taskIndex) => {
-    e.dataTransfer.setData("taskIndex", taskIndex);
-    e.dataTransfer.setData("sourceBoardId", boardId);
-  };
-
-  const onDragOver = (e, boardId, index) => {
-    e.preventDefault();
-    e.dataTransfer.setData("targetIndex", index);
-  };
-
-  const onDrop = (e, targetBoardId, targetIndex) => {
-    const taskIndex = parseInt(e.dataTransfer.getData("taskIndex"), 10);
-    const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
-
-    setData((prevData) => {
-      const newSourceBoard = [...prevData.boards[sourceBoardId]];
-      const [movedTask] = newSourceBoard.splice(taskIndex, 1);
-      const newTargetBoard = [...prevData.boards[targetBoardId]];
-      newTargetBoard.splice(targetIndex, 0, movedTask);
-
-      return {
-        ...prevData,
-        boards: {
-          ...prevData.boards,
-          [sourceBoardId]: newSourceBoard,
-          [targetBoardId]: newTargetBoard,
-        },
-      };
-    });
-  };
-
-  const getTasksForBoard = (boardId) =>
-    data.boards[boardId].map((taskId) =>
-      data.tasks.find((task) => task.id === taskId)
-    );
-
-  return (
-    <div className="app">
-      <h1>Kanban Board</h1>
-      <TaskForm addTask={addTask} />
-      <div className="board-container">
-        <Board
-          title="To Do"
-          tasks={getTasksForBoard("todo")}
-          boardId="todo"
-          onDragStart={onDragStart}
-          onDragOver={onDragOver}
-          onDrop={onDrop}
-        />
-        <Board
-          title="In Progress"
-          tasks={getTasksForBoard("inProgress")}
-          boardId="inProgress"
-          onDragStart={onDragStart}
-          onDragOver={onDragOver}
-          onDrop={onDrop}
-        />
-        <Board
-          title="Completed"
-          tasks={getTasksForBoard("completed")}
-          boardId="completed"
-          onDragStart={onDragStart}
-          onDragOver={onDragOver}
-          onDrop={onDrop}
-        />
-      </div>
-    </div>
-  );
+const styles = {
+  container: { textAlign: "center" },
+  boardContainer: {
+    display: "flex",
+    justifyContent: "space-around",
+    gap: "20px",
+  },
+  board: {
+    background: "#f4f5f7",
+    borderRadius: "5px",
+    padding: "10px",
+    width: "300px",
+    minHeight: "400px",
+  },
+  boardContent: { background: "white", borderRadius: "5px", padding: "8px" },
+  task: {
+    background: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "3px",
+    padding: "8px",
+    marginBottom: "8px",
+  },
+  form: { margin: "20px 0" },
+  input: { padding: "10px", width: "200px", marginRight: "10px" },
+  button: {
+    padding: "10px 15px",
+    backgroundColor: "#007bff",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+  },
 };
 
 export default KanbanBoard;
