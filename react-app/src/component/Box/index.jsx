@@ -41,15 +41,15 @@ export default function BoxContainer() {
       );
 
       if (newQueue.length === 7) {
-        const copyQueue = [...newQueue]; // Copy to avoid mutation
-        copyQueue.forEach((boxId, index) => {
+        newQueue.forEach((boxId, index) => {
           setTimeout(() => {
             setGrid((prevGrid) =>
               prevGrid.map((box) =>
                 box.id === boxId ? { ...box, isClicked: false } : box
               )
             );
-            setQueue((prevQueue) => prevQueue.slice(1)); // Shift queue element
+            queue.shift();
+            setQueue((prev) => [...prev]); // Removes first element
           }, index * 1000);
         });
       }
