@@ -10,14 +10,7 @@ const initialData = {
 };
 
 export default function KanbanBoard() {
-  const [data, setData] = useState(() => {
-    const savedData = localStorage.getItem("kanbanData");
-    return savedData ? JSON.parse(savedData) : initialData;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("kanbanData", JSON.stringify(data));
-  }, [data]);
+  const [data, setData] = useState(initialData);
 
   const addTask = useCallback((content) => {
     setData((prevData) => {
@@ -39,8 +32,6 @@ export default function KanbanBoard() {
   };
 
   const onDrop = (e, targetBoardId, targetIndex) => {
-    e.preventDefault();
-
     const taskId = e.dataTransfer.getData("taskId");
     const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
 
@@ -77,10 +68,10 @@ export default function KanbanBoard() {
       .filter(Boolean);
 
   return (
-    <div style={styles.container}>
-      <h1>Kanban Board</h1>
+    <div className="flex flex-col items-center p-6">
+      <h1 className="text-3xl font-bold mb-6">Kanban Board</h1>
       <TaskForm addTask={addTask} />
-      <div style={styles.boardContainer}>
+      <div className="flex gap-6 w-full justify-center flex-wrap">
         {Object.keys(data.boards).map((boardId) => (
           <Board
             key={boardId}
@@ -98,7 +89,7 @@ export default function KanbanBoard() {
 
 const Task = ({ task, boardId, onDragStart, onDrop, index }) => (
   <div
-    style={styles.task}
+    className="bg-white border border-gray-300 rounded-lg p-3 shadow-md cursor-pointer hover:bg-gray-100 transition"
     draggable
     onDrop={(e) => onDrop(e, boardId, index)}
     onDragOver={(e) => e.preventDefault()}
@@ -109,25 +100,23 @@ const Task = ({ task, boardId, onDragStart, onDrop, index }) => (
 );
 
 const Board = ({ title, tasks, boardId, onDragStart, onDrop }) => (
-  <div style={styles.board}>
-    <h3>{title}</h3>
-    <div style={styles.boardContent}>
+  <div className="bg-gray-200 p-4 rounded-lg w-80 min-h-[400px]">
+    <h3 className="text-xl font-semibold mb-3 capitalize">{title}</h3>
+    <div className="bg-white rounded-lg p-3 min-h-[350px] flex flex-col">
       {tasks.map((task, index) => (
-        <>
-          <Task
-            key={task.id + "-" + index}
-            task={task}
-            boardId={boardId}
-            onDragStart={onDragStart}
-            onDrop={onDrop}
-            index={index}
-          />{" "}
-        </>
+        <Task
+          key={task.id}
+          task={task}
+          boardId={boardId}
+          onDragStart={onDragStart}
+          onDrop={onDrop}
+          index={index}
+        />
       ))}
       <div
-        className="bg-red-400 w-full h-10"
+        className="bg-gray-400 w-full h-10 mt-2 rounded-lg flex-1"
         onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => onDrop(e, boardId, 0)}
+        onDrop={(e) => onDrop(e, boardId, tasks.length)}
       />
     </div>
   </div>
@@ -144,50 +133,20 @@ const TaskForm = ({ addTask }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
+    <form onSubmit={handleSubmit} className="mb-6 flex gap-3">
       <input
         type="text"
         value={taskContent}
         onChange={(e) => setTaskContent(e.target.value)}
         placeholder="Add a new task"
-        style={styles.input}
+        className="border border-gray-300 p-2 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <button type="submit" style={styles.button}>
+      <button
+        type="submit"
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+      >
         Add Task
       </button>
     </form>
   );
-};
-
-const styles = {
-  container: { textAlign: "center" },
-  boardContainer: {
-    display: "flex",
-    justifyContent: "space-around",
-    gap: "20px",
-  },
-  board: {
-    background: "#f4f5f7",
-    borderRadius: "5px",
-    padding: "10px",
-    width: "300px",
-    minHeight: "400px",
-  },
-  boardContent: { background: "white", borderRadius: "5px", padding: "8px" },
-  task: {
-    background: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "3px",
-    padding: "8px",
-    marginBottom: "8px",
-  },
-  form: { margin: "20px 0" },
-  input: { padding: "10px", width: "200px", marginRight: "10px" },
-  button: {
-    padding: "10px 15px",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-  },
 };
