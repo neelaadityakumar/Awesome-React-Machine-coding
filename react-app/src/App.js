@@ -12,6 +12,8 @@ import MultiLevelDropDown from "./component/MultiLevelDropdown";
 import CommentContainer from "./component/comment";
 import ModalContainer from "./component/Modal/ModalContainer";
 import BoxContainer from "./component/Box/BoxContainer";
+import FileExplorerWithCrud from "./component/FileExplorer/FileExplorerWithCrud";
+import KanBanWithTaskAndBoardAdd from "./component/KanbanBoard/KanBanWithTaskAndBoardAdd";
 
 const PageRoutes = [
   {
@@ -20,12 +22,22 @@ const PageRoutes = [
     component: FileExplorer,
   },
   {
+    title: "File Explorer w/ CRUD",
+    path: "/file-explorer-crud",
+    component: FileExplorerWithCrud,
+  },
+  {
     title: "Kanban Board",
     path: "/kanban-board",
     component: KanbanBoard,
   },
   {
-    title: "Drag And Drop",
+    title: "Kanban w/ task/board add",
+    path: "/kanban-board-crud",
+    component: KanBanWithTaskAndBoardAdd,
+  },
+  {
+    title: "Drag & Drop",
     path: "/drag-and-drop",
     component: DragAndDrop,
   },

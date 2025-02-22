@@ -8,6 +8,7 @@ const Home = ({ PageRoutes }) => {
       {PageRoutes.map((page) => (
         <button
           key={page.title}
+          className="bg-[#5959a0] text-white p-4 rounded-md hover:border hover:border-[#5959a0] hover:bg-white hover:text-[#5959a0]"
           onClick={() =>
             navigate(page.path, { state: { id: 123, category: "example" } })
           }
