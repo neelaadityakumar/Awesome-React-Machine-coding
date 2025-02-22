@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const menuData = [
   { label: "Menu 1" },
@@ -14,12 +14,7 @@ const menuData = [
       { label: "Sub Menu 3" },
       {
         label: "Sub Menu 4",
-        submenu: [
-          {
-            label: "Sub sub menu 1",
-          },
-          { label: "Sub sub menu 2" },
-        ],
+        submenu: [{ label: "Sub sub menu 1" }, { label: "Sub sub menu 2" }],
       },
     ],
   },
@@ -28,42 +23,43 @@ const menuData = [
     submenu: [{ label: "Sub Menu 1" }, { label: "Sub Menu 2" }],
   },
 ];
-const MultiLevelDropDown = () => {
-  const toggleSubMenu = (e) => {
-    e.stopPropagation();
 
-    let submenu = e.target.querySelector("ul");
-
-    if (!submenu) return;
-
-    if (submenu.style.display === "none" || !submenu.style.display) {
-      submenu.style.display = "block";
-    } else {
-      submenu.style.display = "none";
-    }
-  };
-
-  const renderSubMenu = (subMenu) => {
-    return (
-      <ul className="hidden ml-4">
-        {subMenu.map((subItem, index) => (
-          <li className="list-disc ml-2" key={index} onClick={toggleSubMenu}>
-            {subItem.label}
-            {subItem.submenu && renderSubMenu(subItem.submenu)}
-          </li>
-        ))}
-      </ul>
-    );
-  };
+const MenuItem = ({ item }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="grid place-content-center">
-      <ul>
+    <>
+      <li className="cursor-pointer select-none">
+        <div
+          className="py-1 px-2 hover:bg-gray-200 rounded-md flex justify-between items-center"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {item.label}
+          {item.submenu && <span>{isOpen ? "▲" : "▼"}</span>}
+        </div>
+      </li>
+
+      {item.submenu && (
+        <ul
+          className={`ml-4 transition-all duration-300 ${
+            isOpen ? "block" : "hidden"
+          }`}
+        >
+          {item.submenu.map((subItem, index) => (
+            <MenuItem key={index} item={subItem} />
+          ))}
+        </ul>
+      )}
+    </>
+  );
+};
+
+const MultiLevelDropDown = () => {
+  return (
+    <div className="grid place-content-center p-4">
+      <ul className="bg-white shadow-md p-4 rounded-md w-64">
         {menuData.map((item, index) => (
-          <li key={index} onClick={toggleSubMenu}>
-            {item.label}
-            {item.submenu && renderSubMenu(item.submenu)}
-          </li>
+          <MenuItem key={index} item={item} />
         ))}
       </ul>
     </div>
