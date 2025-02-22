@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 const initialData = {
   tasks: [],
