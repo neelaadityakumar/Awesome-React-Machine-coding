@@ -60,8 +60,17 @@ const DragAndDropList = () => {
             className="bg-white p-3 rounded-lg shadow-md border border-gray-300 cursor-grab active:cursor-grabbing transition hover:bg-gray-200"
             draggable
             onDragStart={(e) => handleDragStart(e, index)}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => handleDragEnd(e, index)}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.target.style.opacity = 0.3;
+            }}
+            onDragLeave={(e) => {
+              e.target.style.opacity = 1;
+            }}
+            onDrop={(e) => {
+              e.target.style.opacity = 1;
+              handleDragEnd(e, index);
+            }}
           >
             {item}
           </div>
