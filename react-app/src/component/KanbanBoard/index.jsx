@@ -9,7 +9,7 @@ const initialData = {
   },
 };
 
-const KanbanBoard = () => {
+export default function KanbanBoard() {
   const [data, setData] = useState(() => {
     const savedData = localStorage.getItem("kanbanData");
     return savedData ? JSON.parse(savedData) : initialData;
@@ -23,6 +23,7 @@ const KanbanBoard = () => {
     setData((prevData) => {
       const newTask = { id: `task-${Date.now()}`, content };
       return {
+        ...prevData,
         tasks: [...prevData.tasks, newTask],
         boards: {
           ...prevData.boards,
@@ -37,26 +38,43 @@ const KanbanBoard = () => {
     e.dataTransfer.setData("sourceBoardId", boardId);
   };
 
-  const onDrop = (e, targetBoardId) => {
+  const onDrop = (e, targetBoardId, targetIndex) => {
+    e.preventDefault();
+
     const taskId = e.dataTransfer.getData("taskId");
     const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
 
-    if (!taskId || sourceBoardId === targetBoardId) return;
+    if (!taskId || !sourceBoardId) return;
 
     setData((prevData) => {
       const newBoards = { ...prevData.boards };
+
+      // Remove the task from its original board
       newBoards[sourceBoardId] = newBoards[sourceBoardId].filter(
         (id) => id !== taskId
       );
-      newBoards[targetBoardId] = [...newBoards[targetBoardId], taskId];
+
+      // Ensure targetIndex is valid
+      const updatedTargetBoard = [...newBoards[targetBoardId]];
+      if (
+        isNaN(targetIndex) ||
+        targetIndex < 0 ||
+        targetIndex > updatedTargetBoard.length
+      ) {
+        targetIndex = updatedTargetBoard.length; // Default to last position
+      }
+
+      updatedTargetBoard.splice(targetIndex, 0, taskId); // Insert at the correct position
+      newBoards[targetBoardId] = updatedTargetBoard;
+
       return { ...prevData, boards: newBoards };
     });
   };
 
   const getTasksForBoard = (boardId) =>
-    data.boards[boardId].map((taskId) =>
-      data.tasks.find((task) => task.id === taskId)
-    );
+    data.boards[boardId]
+      .map((taskId) => data.tasks.find((task) => task.id === taskId))
+      .filter(Boolean);
 
   return (
     <div style={styles.container}>
@@ -66,9 +84,7 @@ const KanbanBoard = () => {
         {Object.keys(data.boards).map((boardId) => (
           <Board
             key={boardId}
-            title={boardId
-              .replace(/([A-Z])/g, " $1")
-              .replace(/^./, (str) => str.toUpperCase())}
+            title={boardId}
             tasks={getTasksForBoard(boardId)}
             boardId={boardId}
             onDragStart={onDragStart}
@@ -78,12 +94,14 @@ const KanbanBoard = () => {
       </div>
     </div>
   );
-};
+}
 
-const Task = ({ task, boardId, onDragStart }) => (
+const Task = ({ task, boardId, onDragStart, onDrop, index }) => (
   <div
     style={styles.task}
     draggable
+    onDrop={(e) => onDrop(e, boardId, index)}
+    onDragOver={(e) => e.preventDefault()}
     onDragStart={(e) => onDragStart(e, boardId, task.id)}
   >
     {task.content}
@@ -91,21 +109,26 @@ const Task = ({ task, boardId, onDragStart }) => (
 );
 
 const Board = ({ title, tasks, boardId, onDragStart, onDrop }) => (
-  <div
-    style={styles.board}
-    onDragOver={(e) => e.preventDefault()}
-    onDrop={(e) => onDrop(e, boardId)}
-  >
+  <div style={styles.board}>
     <h3>{title}</h3>
     <div style={styles.boardContent}>
-      {tasks.map((task) => (
-        <Task
-          key={task.id}
-          task={task}
-          boardId={boardId}
-          onDragStart={onDragStart}
-        />
+      {tasks.map((task, index) => (
+        <>
+          <Task
+            key={task.id + "-" + index}
+            task={task}
+            boardId={boardId}
+            onDragStart={onDragStart}
+            onDrop={onDrop}
+            index={index}
+          />{" "}
+        </>
       ))}
+      <div
+        className="bg-red-400 w-full h-10"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => onDrop(e, boardId, 0)}
+      />
     </div>
   </div>
 );
@@ -168,5 +191,3 @@ const styles = {
     borderRadius: "5px",
   },
 };
-
-export default KanbanBoard;
