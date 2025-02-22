@@ -11,7 +11,7 @@ import DragAndDrop from "./component/DragAndDrop";
 import MultiLevelDropDown from "./component/MultiLevelDropdown";
 import CommentContainer from "./component/comment";
 import ModalContainer from "./component/Modal/ModalContainer";
-import BoxContainer from "./component/Box/BoxContainer";
+import Box from "./component/Box";
 import FileExplorerWithCrud from "./component/FileExplorer/FileExplorerWithCrud";
 import KanBanWithTaskAndBoardAdd from "./component/KanbanBoard/KanBanWithTaskAndBoardAdd";
 
@@ -79,7 +79,7 @@ const PageRoutes = [
   {
     title: "Box",
     path: "/box",
-    component: BoxContainer,
+    component: Box,
   },
 ];
 function App() {
