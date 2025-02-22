@@ -1,6 +1,4 @@
-// src/components/DragAndDropList.js
 import React, { useState } from "react";
-import "./index.css";
 
 const DragAndDropList = () => {
   const [text, setText] = useState("");
@@ -12,36 +10,26 @@ const DragAndDropList = () => {
     "Item 5",
   ]);
 
-  const [draggedItemIndex, setDraggedItemIndex] = useState(null);
-
-  const handleDragStart = (index) => {
-    setDraggedItemIndex(index);
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData("draggedItemIndex", index);
   };
 
-  const handleDragOver = (index) => {
-    const draggedOverItem = items[index];
-    if (draggedOverItem === items[draggedItemIndex]) {
-      return;
-    }
+  const handleDragEnd = (e, index) => {
+    const draggedItemIndex = Number(e.dataTransfer.getData("draggedItemIndex"));
+    const draggedItem = items[draggedItemIndex];
+    items.splice(draggedItemIndex, 1);
+    items.splice(index, 0, draggedItem);
 
-    const itemsCopy = [...items];
-    const draggedItem = itemsCopy[draggedItemIndex];
-    itemsCopy.splice(draggedItemIndex, 1);
-    itemsCopy.splice(index, 0, draggedItem);
-
-    setDraggedItemIndex(index);
-    setItems(itemsCopy);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedItemIndex(null);
+    setItems([...items]);
   };
 
   return (
-    <div className="drag-and-drop-list">
-      <h1>Drag and Drop List</h1>
+    <div className="max-w-md mx-auto mt-10 bg-gray-100 p-6 rounded-lg shadow-lg">
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        Drag and Drop List
+      </h1>
       <form
-        className="form"
+        className="flex gap-3 mb-4"
         onSubmit={(e) => {
           e.preventDefault();
           if (text.trim() !== "") {
@@ -55,21 +43,30 @@ const DragAndDropList = () => {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Task Name"
+          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <button type="submit">Add Task</button>
-      </form>
-      {items.map((item, index) => (
-        <div
-          key={index}
-          className="list-item"
-          draggable
-          onDragStart={() => handleDragStart(index)}
-          onDragOver={() => handleDragOver(index)}
-          onDragEnd={handleDragEnd}
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
         >
-          {item}
-        </div>
-      ))}
+          Add Task
+        </button>
+      </form>
+
+      <div className="space-y-3">
+        {items.map((item, index) => (
+          <div
+            key={index}
+            className="bg-white p-3 rounded-lg shadow-md border border-gray-300 cursor-grab active:cursor-grabbing transition hover:bg-gray-200"
+            draggable
+            onDragStart={(e) => handleDragStart(e, index)}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => handleDragEnd(e, index)}
+          >
+            {item}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
