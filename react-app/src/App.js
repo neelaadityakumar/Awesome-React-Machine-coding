@@ -11,7 +11,7 @@ import DragAndDrop from "./component/DragAndDrop";
 import MultiLevelDropDown from "./component/MultiLevelDropdown";
 import CommentContainer from "./component/comment";
 import ModalContainer from "./component/Modal/ModalContainer";
-import Box from "./component/Box";
+import GridLight from "./component/GridLight";
 import FileExplorerWithCrud from "./component/FileExplorer/FileExplorerWithCrud";
 import KanBanWithTaskAndBoardAdd from "./component/KanbanBoard/KanBanWithTaskAndBoardAdd";
 
@@ -77,9 +77,9 @@ const PageRoutes = [
     component: ModalContainer,
   },
   {
-    title: "Box",
-    path: "/box",
-    component: Box,
+    title: "Grid Light",
+    path: "/grid-light",
+    component: GridLight,
   },
 ];
 function App() {
