@@ -3,7 +3,7 @@ import "./App.css";
 import Home from "./component/Home";
 import Virtualization from "./component/Virtualization";
 import Toast from "./component/Toast";
-import TrafficLightGenerator from "./component/Traffic/TrafficLightGenerator";
+import Traffic from "./component/Traffic";
 import Calendar from "./component/Calendar";
 import FileExplorer from "./component/FileExplorer";
 import KanbanBoard from "./component/KanbanBoard";
@@ -47,9 +47,9 @@ const PageRoutes = [
     component: Toast,
   },
   {
-    title: "Traffic Light Generator",
+    title: "Traffic Light",
     path: "/traffic",
-    component: TrafficLightGenerator,
+    component: Traffic,
   },
   {
     title: "Virtualization",
