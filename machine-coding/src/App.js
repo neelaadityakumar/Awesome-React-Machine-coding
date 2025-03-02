@@ -14,6 +14,7 @@ import ModalContainer from "./component/Modal/ModalContainer";
 import GridLight from "./component/GridLight";
 import FileExplorerWithCrud from "./component/FileExplorer/FileExplorerWithCrud";
 import KanBanWithTaskAndBoardAdd from "./component/KanbanBoard/KanBanWithTaskAndBoardAdd";
+import Timer from "./component/Timer";
 
 const PageRoutes = [
   {
@@ -80,6 +81,11 @@ const PageRoutes = [
     title: "Grid Light",
     path: "/grid-light",
     component: GridLight,
+  },
+  {
+    title: "Timer",
+    path: "/timer",
+    component: Timer,
   },
 ];
 function App() {
