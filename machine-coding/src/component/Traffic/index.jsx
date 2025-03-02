@@ -6,15 +6,15 @@ const config = {
     duration: 4000,
     next: "green",
   },
-  yellow: {
-    bgColor: "bg-yellow-400",
-    duration: 500,
-    next: "red",
-  },
   green: {
     bgColor: "bg-green-500",
     duration: 3000,
     next: "yellow",
+  },
+  yellow: {
+    bgColor: "bg-yellow-400",
+    duration: 500,
+    next: "red",
   },
 };
 
@@ -22,7 +22,7 @@ function Light({ activeClass }) {
   return (
     <div
       aria-hidden="true"
-      className={`w-12 h-12 rounded-full  ${activeClass} `}
+      className={`w-12 h-12 rounded-full ${activeClass} `}
     />
   );
 }
