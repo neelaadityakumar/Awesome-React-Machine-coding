@@ -18,6 +18,7 @@ import MemoryGame from "./component/MemoryGame";
 import Carousel from "./component/Carousel";
 import Smooth from "./component/Carousel/Smooth";
 import CommentContainer from "./component/Comments";
+import ProgressBar from "./component/ProgressBar";
 
 const PageRoutes = [
   {
@@ -104,6 +105,11 @@ const PageRoutes = [
     title: "Smooth Carousel",
     path: "/smooth-carousel",
     component: Smooth,
+  },
+  {
+    title: "Progress",
+    path: "/progress",
+    component: ProgressBar,
   },
 ];
 function App() {
