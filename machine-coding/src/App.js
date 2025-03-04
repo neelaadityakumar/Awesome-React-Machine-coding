@@ -16,6 +16,8 @@ import FileExplorerWithCrud from "./component/FileExplorer/FileExplorerWithCrud"
 import KanBanWithTaskAndBoardAdd from "./component/KanbanBoard/KanBanWithTaskAndBoardAdd";
 import Timer from "./component/Timer";
 import MemoryGame from "./component/MemoryGame";
+import Carousel from "./component/Carousel";
+import Smooth from "./component/Carousel/Smooth";
 
 const PageRoutes = [
   {
@@ -93,11 +95,21 @@ const PageRoutes = [
     path: "/memory-game",
     component: MemoryGame,
   },
+  {
+    title: "Basic Carousel",
+    path: "/basic-carousel",
+    component: Carousel,
+  },
+  {
+    title: "Smooth Carousel",
+    path: "/smooth-carousel",
+    component: Smooth,
+  },
 ];
 function App() {
   return (
     <main className="min-w-full flex justify-center px-10 py-4">
-      <div className="flex flex-col items-center my-10">
+      <div className="flex flex-col items-center my-10 w-full">
         <a
           href="/"
           className="text-3xl font-sm py-2 px-5 rounded-md mb-8 bg-[#5959a0] text-white"
