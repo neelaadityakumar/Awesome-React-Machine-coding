@@ -19,6 +19,7 @@ import Carousel from "./component/Carousel";
 import Smooth from "./component/Carousel/Smooth";
 import CommentContainer from "./component/Comments";
 import ProgressBar from "./component/ProgressBar";
+import SmoothProgress from "./component/ProgressBar/Smooth";
 
 const PageRoutes = [
   {
@@ -110,6 +111,11 @@ const PageRoutes = [
     title: "Progress",
     path: "/progress",
     component: ProgressBar,
+  },
+  {
+    title: "Smooth Progress",
+    path: "/smooth-progress",
+    component: SmoothProgress,
   },
 ];
 function App() {
