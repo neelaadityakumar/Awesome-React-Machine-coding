@@ -15,6 +15,7 @@ import GridLight from "./component/GridLight";
 import FileExplorerWithCrud from "./component/FileExplorer/FileExplorerWithCrud";
 import KanBanWithTaskAndBoardAdd from "./component/KanbanBoard/KanBanWithTaskAndBoardAdd";
 import Timer from "./component/Timer";
+import MemoryGame from "./component/MemoryGame";
 
 const PageRoutes = [
   {
@@ -86,6 +87,11 @@ const PageRoutes = [
     title: "Timer",
     path: "/timer",
     component: Timer,
+  },
+  {
+    title: "Memory Game",
+    path: "/memory-game",
+    component: MemoryGame,
   },
 ];
 function App() {
