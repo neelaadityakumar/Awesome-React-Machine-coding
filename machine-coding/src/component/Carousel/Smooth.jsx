@@ -34,21 +34,17 @@ function ImageCarousel({ images }) {
 
   return (
     <div
-      className={`relative flex w-[384px] h-96 bg-black rounded-lg translate-x-(${
-        -currIndex * 384
-      }px)`}
+      className={`relative flex w-[384px] h-96 bg-black rounded-lg overflow-hidden`}
     >
-      {/* Image */}
-
-      {images.map((img) => (
+      {images.map((img, index) => (
         <img
-          alt={img.alt}
+          key={img.src + "" + index}
           src={img.src}
-          key={img.src}
-          className={`min-w-full h-full object-contain transition-opacity duration-500 `}
+          alt={img.alt}
+          className="w-full h-96 object-cover transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currIndex * 100}%)` }}
         />
       ))}
-
       {/* Previous Button */}
       <button
         aria-label="Previous image"
