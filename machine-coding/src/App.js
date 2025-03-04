@@ -9,7 +9,6 @@ import FileExplorer from "./component/FileExplorer";
 import KanbanBoard from "./component/KanbanBoard";
 import DragAndDrop from "./component/DragAndDrop";
 import MultiLevelDropDown from "./component/MultiLevelDropdown";
-import CommentContainer from "./component/comment";
 import ModalContainer from "./component/Modal/ModalContainer";
 import GridLight from "./component/GridLight";
 import FileExplorerWithCrud from "./component/FileExplorer/FileExplorerWithCrud";
@@ -18,6 +17,7 @@ import Timer from "./component/Timer";
 import MemoryGame from "./component/MemoryGame";
 import Carousel from "./component/Carousel";
 import Smooth from "./component/Carousel/Smooth";
+import CommentContainer from "./component/Comment/main";
 
 const PageRoutes = [
   {
