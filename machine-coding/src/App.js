@@ -17,7 +17,7 @@ import Timer from "./component/Timer";
 import MemoryGame from "./component/MemoryGame";
 import Carousel from "./component/Carousel";
 import Smooth from "./component/Carousel/Smooth";
-import CommentContainer from "./component/Comment/main";
+import CommentContainer from "./component/Comments";
 
 const PageRoutes = [
   {
