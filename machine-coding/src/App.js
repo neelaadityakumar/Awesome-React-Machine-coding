@@ -20,6 +20,7 @@ import Smooth from "./component/Carousel/Smooth";
 import CommentContainer from "./component/Comments";
 import ProgressBar from "./component/ProgressBar";
 import SmoothProgress from "./component/ProgressBar/Smooth";
+import OTP from "./component/OTP";
 
 const PageRoutes = [
   {
@@ -116,6 +117,11 @@ const PageRoutes = [
     title: "Smooth Progress",
     path: "/smooth-progress",
     component: SmoothProgress,
+  },
+  {
+    title: "OTP",
+    path: "/otp",
+    component: OTP,
   },
 ];
 function App() {
