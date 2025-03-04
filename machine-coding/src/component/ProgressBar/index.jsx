@@ -1,27 +1,27 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const ProgressBar = ({ max = 10, duration = 5000 }) => {
+const ProgressBar = ({ max = 25, duration = 4000 }) => {
   const [progress, setProgress] = useState(0);
-  const intervalRef = useRef(null);
-
-  // Using a small update interval (e.g., 50ms) for smooth progress
-  const updateInterval = 50;
-  const step = (max * updateInterval) / duration;
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + step;
-        if (next >= max) {
-          clearInterval(intervalRef.current);
-          return max;
-        }
-        return next;
-      });
-    }, updateInterval);
+    let startTime = null;
+    let animationFrameId;
 
-    return () => clearInterval(intervalRef.current);
-  }, [max, duration, step]);
+    const updateProgress = (timestamp) => {
+      if (startTime === null) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const nextProgress = Math.min((elapsed / duration) * max, max);
+      setProgress(nextProgress);
+
+      if (elapsed < duration) {
+        animationFrameId = requestAnimationFrame(updateProgress);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(updateProgress);
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [max, duration]);
 
   return (
     <div className="bg-gray-200 h-4 w-96 rounded-md overflow-hidden">
