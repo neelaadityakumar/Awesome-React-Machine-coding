@@ -25,6 +25,7 @@ import Simple from "./component/ProgressBar/Simple";
 import StopWatch from "./component/Timer/StopWatch";
 import AccurateStopWatch from "./component/Timer/AccurateStopWatch";
 import TicTacToe from "./component/TicTacToe";
+import TransferList from "./component/TransferList";
 
 const PageRoutes = [
   {
@@ -144,6 +145,7 @@ const PageRoutes = [
     component: OTP,
   },
   { title: "TicTacToe", path: "/TicTacToe", component: TicTacToe },
+  { title: "TransferList", path: "/TransferList", component: TransferList },
 ];
 function App() {
   return (
