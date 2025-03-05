@@ -23,6 +23,7 @@ import SmoothProgress from "./component/ProgressBar/Smooth";
 import OTP from "./component/OTP";
 import Simple from "./component/ProgressBar/Simple";
 import StopWatch from "./component/Timer/StopWatch";
+import AccurateStopWatch from "./component/Timer/AccurateStopWatch";
 
 const PageRoutes = [
   {
@@ -100,6 +101,12 @@ const PageRoutes = [
     path: "/stopwatch",
     component: StopWatch,
   },
+  {
+    title: "Stopwatch-2",
+    path: "/stopwatch-2",
+    component: AccurateStopWatch,
+  },
+
   {
     title: "Memory Game",
     path: "/memory-game",
