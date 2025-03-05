@@ -21,6 +21,7 @@ import CommentContainer from "./component/Comments";
 import ProgressBar from "./component/ProgressBar";
 import SmoothProgress from "./component/ProgressBar/Smooth";
 import OTP from "./component/OTP";
+import Simple from "./component/ProgressBar/Simple";
 
 const PageRoutes = [
   {
@@ -107,6 +108,11 @@ const PageRoutes = [
     title: "Smooth Carousel",
     path: "/smooth-carousel",
     component: Smooth,
+  },
+  {
+    title: "Parallel Progress",
+    path: "/parallel-progress",
+    component: Simple,
   },
   {
     title: "Progress",
