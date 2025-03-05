@@ -22,6 +22,7 @@ import ProgressBar from "./component/ProgressBar";
 import SmoothProgress from "./component/ProgressBar/Smooth";
 import OTP from "./component/OTP";
 import Simple from "./component/ProgressBar/Simple";
+import StopWatch from "./component/Timer/StopWatch";
 
 const PageRoutes = [
   {
@@ -93,6 +94,11 @@ const PageRoutes = [
     title: "Timer",
     path: "/timer",
     component: Timer,
+  },
+  {
+    title: "Stopwatch",
+    path: "/stopwatch",
+    component: StopWatch,
   },
   {
     title: "Memory Game",
