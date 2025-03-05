@@ -1,130 +1,95 @@
-import { useId, useState } from "react";
+import { useState } from "react";
 
-function CheckboxItem({ onChange, label, checked }) {
-  const id = useId();
+const DEFAULT_ITEMS_LEFT = [
+  { label: "HTML", checked: false },
+  { label: "JavaScript", checked: false },
+  { label: "CSS", checked: false },
+  { label: "TypeScript", checked: false },
+];
 
-  return (
-    <div className="flex gap-2 items-center">
-      <input
-        type="checkbox"
-        id={id}
-        checked={checked}
-        onChange={onChange}
-        className="w-4 h-4"
-      />
-      <label htmlFor={id} className="text-sm">
-        {label}
-      </label>
-    </div>
-  );
-}
+const DEFAULT_ITEMS_RIGHT = [
+  { label: "React", checked: false },
+  { label: "Angular", checked: false },
+  { label: "Vue", checked: false },
+  { label: "Svelte", checked: false },
+];
 
 function ItemList({ items, setItems }) {
   return (
-    <div className="p-5 flex-grow border rounded-md shadow-md bg-white">
-      <ul className="space-y-3">
-        {Array.from(items.entries()).map(([label, checked]) => (
-          <li key={label}>
-            <CheckboxItem
-              label={label}
-              checked={checked}
-              onChange={() => {
-                const newItems = new Map(items);
-                newItems.set(label, !items.get(label));
-                setItems(newItems);
-              }}
-            />
-          </li>
-        ))}
-      </ul>
+    <div className="p-4 flex flex-col gap-2">
+      {items.map((item, index) => (
+        <label key={index} className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={item.checked}
+            onChange={() => {
+              const newItems = [...items];
+              newItems[index].checked = !newItems[index].checked;
+              setItems(newItems);
+            }}
+          />
+          {item.label}
+        </label>
+      ))}
     </div>
   );
 }
 
-const DEFAULT_ITEMS_LEFT = ["HTML", "JavaScript", "CSS", "TypeScript"];
-const DEFAULT_ITEMS_RIGHT = ["React", "Angular", "Vue", "Svelte"];
-
-function generateItemsMap(items) {
-  return new Map(items.map((label) => [label, false]));
-}
-
-function hasNoSelectedItems(items) {
-  return Array.from(items.values()).every((val) => !val);
-}
-
-function transferAllItems(itemsSrc, setItemsSrc, itemsDst, setItemsDst) {
-  setItemsDst(new Map([...itemsDst, ...itemsSrc]));
-  setItemsSrc(new Map());
-}
-
-function transferSelectedItems(itemsSrc, setItemsSrc, itemsDst, setItemsDst) {
-  const newItemsSrc = new Map(itemsSrc);
-  const newItemsDst = new Map(itemsDst);
-
-  itemsSrc.forEach((value, key) => {
-    if (value) {
-      newItemsDst.set(key, value);
-      newItemsSrc.delete(key);
-    }
-  });
-  setItemsSrc(newItemsSrc);
-  setItemsDst(newItemsDst);
-}
-
 export default function TransferList() {
-  const [itemsLeft, setItemsLeft] = useState(
-    generateItemsMap(DEFAULT_ITEMS_LEFT)
-  );
-  const [itemsRight, setItemsRight] = useState(
-    generateItemsMap(DEFAULT_ITEMS_RIGHT)
-  );
+  const [itemsLeft, setItemsLeft] = useState(DEFAULT_ITEMS_LEFT);
+  const [itemsRight, setItemsRight] = useState(DEFAULT_ITEMS_RIGHT);
+
+  // Helper functions
+  const hasSelected = (items) => items.some((item) => item.checked);
+
+  const transferSelected = (from, setFrom, to, setTo) => {
+    const selected = from.filter((item) => item.checked);
+    const remaining = from.filter((item) => !item.checked);
+    setTo([...to, ...selected.map((item) => ({ ...item, checked: false }))]);
+    setFrom(remaining);
+  };
+
+  const transferAll = (from, setFrom, to, setTo) => {
+    setTo([...to, ...from.map((item) => ({ ...item, checked: false }))]);
+    setFrom([]);
+  };
 
   return (
-    <div className="flex max-w-2xl mx-auto border p-5 shadow-lg rounded-md bg-gray-50">
+    <div className="flex gap-4 p-6 border border-gray-300 max-w-lg mx-auto">
       <ItemList items={itemsLeft} setItems={setItemsLeft} />
-      <div className="flex flex-col items-center justify-center space-y-3 px-5">
+      <div className="flex flex-col items-center gap-2">
         <button
-          className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md disabled:opacity-50"
-          disabled={itemsRight.size === 0}
+          className="px-2 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+          disabled={itemsRight.length === 0}
           onClick={() =>
-            transferAllItems(itemsRight, setItemsRight, itemsLeft, setItemsLeft)
+            transferAll(itemsRight, setItemsRight, itemsLeft, setItemsLeft)
           }
         >
           &lt;&lt;
         </button>
         <button
-          className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md disabled:opacity-50"
-          disabled={hasNoSelectedItems(itemsRight)}
+          className="px-2 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+          disabled={!hasSelected(itemsRight)}
           onClick={() =>
-            transferSelectedItems(
-              itemsRight,
-              setItemsRight,
-              itemsLeft,
-              setItemsLeft
-            )
+            transferSelected(itemsRight, setItemsRight, itemsLeft, setItemsLeft)
           }
         >
           &lt;
         </button>
         <button
-          className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md disabled:opacity-50"
-          disabled={hasNoSelectedItems(itemsLeft)}
+          className="px-2 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+          disabled={!hasSelected(itemsLeft)}
           onClick={() =>
-            transferSelectedItems(
-              itemsLeft,
-              setItemsLeft,
-              itemsRight,
-              setItemsRight
-            )
+            transferSelected(itemsLeft, setItemsLeft, itemsRight, setItemsRight)
           }
         >
           &gt;
         </button>
         <button
-          className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md disabled:opacity-50"
-          disabled={itemsLeft.size === 0}
+          className="px-2 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+          disabled={itemsLeft.length === 0}
           onClick={() =>
-            transferAllItems(itemsLeft, setItemsLeft, itemsRight, setItemsRight)
+            transferAll(itemsLeft, setItemsLeft, itemsRight, setItemsRight)
           }
         >
           &gt;&gt;
