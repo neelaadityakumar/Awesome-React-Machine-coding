@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 const MS_IN_SECOND = 1000;
 const SECONDS_IN_MINUTE = 60;
@@ -14,19 +14,23 @@ function formatTime(timeParam) {
     seconds: 0,
     ms: 0,
   };
-  if (time >= MS_IN_HOUR) {
+  if (time > MS_IN_HOUR) {
     parts.hours = Math.floor(time / MS_IN_HOUR);
     time %= MS_IN_HOUR;
   }
-  if (time >= MS_IN_MINUTE) {
+
+  if (time > MS_IN_MINUTE) {
     parts.minutes = Math.floor(time / MS_IN_MINUTE);
     time %= MS_IN_MINUTE;
   }
-  if (time >= MS_IN_SECOND) {
+
+  if (time > MS_IN_SECOND) {
     parts.seconds = Math.floor(time / MS_IN_SECOND);
     time %= MS_IN_SECOND;
   }
+
   parts.ms = time;
+
   return parts;
 }
 
@@ -34,85 +38,90 @@ function padTwoDigit(number) {
   return number >= 10 ? String(number) : `0${number}`;
 }
 
-const AccurateStopWatch = () => {
-  const [time, setTime] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const timerRef = useRef(null);
-  const lastStartTimeRef = useRef(null);
+export default function AccurateStopWatch() {
+  const lastTickTiming = useRef(null);
+  const [totalDuration, setTotalDuration] = useState(0);
+  // Timer ID of the active interval, if one is running.
+  const [timerId, setTimerId] = useState(null);
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
+  // Derived state to determine if there's a timer running.
+  const isRunning = timerId != null;
 
-  const startTimer = () => {
-    if (timerRef.current != null) return;
+  function startTimer() {
+    lastTickTiming.current = Date.now();
+    setTimerId(
+      window.setInterval(() => {
+        const now = Date.now();
+        const timePassed = now - lastTickTiming.current;
+        setTotalDuration(
+          (duration) =>
+            // Use the callback form of setState to ensure
+            // we are using the latest value of duration.
+            duration + timePassed
+        );
+        lastTickTiming.current = now;
+      }, 1)
+    );
+  }
 
-    lastStartTimeRef.current = Date.now() - time; // Adjust start time
-    setIsRunning(true);
+  function stopInterval() {
+    window.clearInterval(timerId);
+    setTimerId(null);
+  }
 
-    timerRef.current = setInterval(() => {
-      setTime(Date.now() - lastStartTimeRef.current);
-    }, 10);
-  };
+  function resetTimer() {
+    stopInterval();
+    setTotalDuration(0);
+  }
 
-  const pauseTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-      setIsRunning(false);
+  function toggleTimer() {
+    if (isRunning) {
+      stopInterval();
+    } else {
+      startTimer();
     }
-  };
+  }
 
-  const toggleTimer = () => {
-    isRunning ? pauseTimer() : startTimer();
-  };
-
-  const resetTimer = () => {
-    pauseTimer();
-    setTime(0);
-    lastStartTimeRef.current = null;
-  };
-
-  const formattedTime = formatTime(time);
+  const formattedTime = formatTime(totalDuration);
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <div className="mb-4 text-2xl font-bold text-center">Stopwatch</div>
+    <div className="flex flex-col items-center p-6 max-w-md mx-auto bg-white shadow-lg rounded-lg">
+      <h1 className="text-2xl font-bold mb-4">Stopwatch</h1>
+
       <button
-        className="w-full p-4 bg-gray-200 text-xl rounded shadow"
+        className="text-5xl font-mono mb-4 focus:outline-none"
         onClick={toggleTimer}
       >
         {formattedTime.hours > 0 && (
           <span>
-            <span>{formattedTime.hours}</span>
-            <span>h </span>
+            {formattedTime.hours}
+            <span className="text-xl">h</span>{" "}
           </span>
         )}
         {formattedTime.minutes > 0 && (
           <span>
-            <span>{formattedTime.minutes}</span>
-            <span>m </span>
+            {formattedTime.minutes}
+            <span className="text-xl">m</span>{" "}
           </span>
         )}
         <span>
-          <span>{formattedTime.seconds}</span>
-          <span>s </span>
+          {formattedTime.seconds}
+          <span className="text-xl">s</span>{" "}
         </span>
-        <span className="text-sm">
+        <span className="text-xl">
           {padTwoDigit(Math.floor(formattedTime.ms / 10))}
         </span>
       </button>
-      <div className="flex justify-between mt-4">
+
+      <div className="flex space-x-4">
         <button
-          className="flex-1 bg-gray-700 text-white px-4 py-2 rounded mr-2 hover:bg-gray-800 transition"
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
           onClick={toggleTimer}
         >
           {isRunning ? "Pause" : "Start"}
         </button>
         <button
-          className="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
           onClick={resetTimer}
         >
           Reset
@@ -120,5 +129,4 @@ const AccurateStopWatch = () => {
       </div>
     </div>
   );
-};
-export default AccurateStopWatch;
+}
