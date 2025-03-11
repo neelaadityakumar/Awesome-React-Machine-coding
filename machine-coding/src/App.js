@@ -28,6 +28,7 @@ import TicTacToe from "./component/TicTacToe";
 import TransferList from "./component/TransferList";
 import PixelArt from "./component/PixelArt";
 import AnalogClock from "./component/AnalogClock";
+import WhackAMole from "./component/WhackMole";
 
 const PageRoutes = [
   {
@@ -150,6 +151,7 @@ const PageRoutes = [
   { title: "TransferList", path: "/TransferList", component: TransferList },
   { title: "PixelArt", path: "/PixelArt", component: PixelArt },
   { title: "AnalogClock", path: "/AnalogClock", component: AnalogClock },
+  { title: "WhackAMole", path: "/WhackAMole", component: WhackAMole },
 ];
 function App() {
   return (

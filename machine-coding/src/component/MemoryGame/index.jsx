@@ -88,7 +88,10 @@ const Game = ({ row, col, delay, matchCount }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className={`grid grid-cols-${col} gap-4`}>
+      <div
+        className={`grid gap-4`}
+        style={{ gridTemplateColumns: `repeat(${col}, 1fr)` }}
+      >
         {emojis.map((emoji, index) => (
           <button
             key={index}
