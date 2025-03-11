@@ -27,6 +27,7 @@ import AccurateStopWatch from "./component/Timer/AccurateStopWatch";
 import TicTacToe from "./component/TicTacToe";
 import TransferList from "./component/TransferList";
 import PixelArt from "./component/PixelArt";
+import AnalogClock from "./component/AnalogClock";
 
 const PageRoutes = [
   {
@@ -148,6 +149,7 @@ const PageRoutes = [
   { title: "TicTacToe", path: "/TicTacToe", component: TicTacToe },
   { title: "TransferList", path: "/TransferList", component: TransferList },
   { title: "PixelArt", path: "/PixelArt", component: PixelArt },
+  { title: "AnalogClock", path: "/AnalogClock", component: AnalogClock },
 ];
 function App() {
   return (
