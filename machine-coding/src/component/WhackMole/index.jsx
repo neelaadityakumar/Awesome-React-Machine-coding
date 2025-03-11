@@ -97,7 +97,11 @@ function WhackAMole({
         )}
       </div>
       <div
-        className={`grid grid-cols-${cols} grid-rows-${rows} aspect-square gap-2 w-full max-w-xs`}
+        className={`grid aspect-square gap-2 w-full max-w-xs`}
+        style={{
+          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          gridTemplateRows: `repeat(${rows}, 1fr)`,
+        }}
       >
         {Array(totalCount)
           .fill(null)
@@ -110,12 +114,12 @@ function WhackAMole({
               <img
                 src="https://www.greatfrontend.com/img/questions/whack-a-mole/mole-hill.png"
                 alt="Mole hill"
-                className="absolute left-1/2 transform -translate-x-1/2 w-full h-1/4"
+                className="absolute transform w-full h-1/4"
               />{" "}
               <img
                 src="https://www.greatfrontend.com/img/questions/whack-a-mole/mole-head.png"
                 alt="Mole head"
-                className={`absolute left-1/2 -top-0 transform -translate-x-1/2 transition-transform duration-100 cursor-pointer w-full h-3/4 ${
+                className={`absolute top-0 z-10 transform transition-transform duration-100 cursor-pointer w-full h-3/4  ${
                   visible.has(index)
                     ? "translate-y-0 scale-100"
                     : "translate-y-full scale-0"
