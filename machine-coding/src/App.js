@@ -29,6 +29,7 @@ import TransferList from "./component/TransferList";
 import PixelArt from "./component/PixelArt";
 import AnalogClock from "./component/AnalogClock";
 import WhackAMole from "./component/WhackMole";
+import NestedCheckbox from "./component/NestedCheckbox";
 
 const PageRoutes = [
   {
@@ -152,6 +153,11 @@ const PageRoutes = [
   { title: "PixelArt", path: "/PixelArt", component: PixelArt },
   { title: "AnalogClock", path: "/AnalogClock", component: AnalogClock },
   { title: "WhackAMole", path: "/WhackAMole", component: WhackAMole },
+  {
+    title: "NestedCheckbox",
+    path: "/NestedCheckbox",
+    component: NestedCheckbox,
+  },
 ];
 function App() {
   return (
