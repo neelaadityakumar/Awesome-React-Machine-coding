@@ -30,6 +30,7 @@ import PixelArt from "./component/PixelArt";
 import AnalogClock from "./component/AnalogClock";
 import WhackAMole from "./component/WhackMole";
 import NestedCheckbox from "./component/NestedCheckbox";
+import SelectableGrid from "./component/SelectableGrid";
 
 const PageRoutes = [
   {
@@ -157,6 +158,11 @@ const PageRoutes = [
     title: "NestedCheckbox",
     path: "/NestedCheckbox",
     component: NestedCheckbox,
+  },
+  {
+    title: "SelectableGrid",
+    path: "/SelectableGrid",
+    component: SelectableGrid,
   },
 ];
 function App() {
