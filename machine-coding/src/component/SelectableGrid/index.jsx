@@ -1,59 +1,71 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 
 const SelectableGrid = () => {
   const gridSize = 10;
   const cellSize = 20;
   const [selectedCells, setSelectedCells] = useState(new Set());
   const [selectionBox, setSelectionBox] = useState(null);
-  const [hoveredCells, setHoveredCells] = useState(new Set());
   const gridRef = useRef(null);
 
-  const getCellCoordinates = (x, y) => {
+  const getCellCoordinates = useCallback((x, y) => {
+    if (!gridRef.current) return { row: -1, col: -1 };
     const rect = gridRef.current.getBoundingClientRect();
-    const col = Math.floor((x - rect.left) / cellSize);
-    const row = Math.floor((y - rect.top) / cellSize);
-    return { row, col };
-  };
+    return {
+      row: Math.max(
+        0,
+        Math.min(gridSize - 1, Math.floor((y - rect.top) / cellSize))
+      ),
+      col: Math.max(
+        0,
+        Math.min(gridSize - 1, Math.floor((x - rect.left) / cellSize))
+      ),
+    };
+  }, []);
 
-  const handleMouseDown = (e) => {
-    setSelectedCells(new Set());
-    const start = getCellCoordinates(e.clientX, e.clientY);
-    setSelectionBox({ start, end: start });
-    setHoveredCells(new Set());
-  };
-
-  const handleMouseMove = (e) => {
-    if (!selectionBox) return;
-    const end = getCellCoordinates(e.clientX, e.clientY);
-    setSelectionBox({ ...selectionBox, end });
-
-    const newHoveredCells = new Set();
+  const updateSelectedCells = useCallback((start, end) => {
+    const newSelectedCells = new Set();
     for (
-      let row = Math.min(selectionBox.start.row, end.row);
-      row <= Math.max(selectionBox.start.row, end.row);
+      let row = Math.min(start.row, end.row);
+      row <= Math.max(start.row, end.row);
       row++
     ) {
       for (
-        let col = Math.min(selectionBox.start.col, end.col);
-        col <= Math.max(selectionBox.start.col, end.col);
+        let col = Math.min(start.col, end.col);
+        col <= Math.max(start.col, end.col);
         col++
       ) {
-        newHoveredCells.add(`${row}-${col}`);
+        newSelectedCells.add(`${row}-${col}`);
       }
     }
-    setHoveredCells(newHoveredCells);
-  };
+    setSelectedCells(newSelectedCells);
+  }, []);
 
-  const handleMouseUp = () => {
-    if (!selectionBox) return;
-    setSelectedCells(new Set(hoveredCells));
+  const handleMouseDown = useCallback(
+    (e) => {
+      const start = getCellCoordinates(e.clientX, e.clientY);
+      setSelectionBox({ start, end: start });
+      setSelectedCells(new Set());
+    },
+    [getCellCoordinates]
+  );
+
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!selectionBox) return;
+      const end = getCellCoordinates(e.clientX, e.clientY);
+      setSelectionBox((prev) => ({ ...prev, end }));
+      updateSelectedCells(selectionBox.start, end);
+    },
+    [selectionBox, getCellCoordinates, updateSelectedCells]
+  );
+
+  const handleMouseUp = useCallback(() => {
     setSelectionBox(null);
-    setHoveredCells(new Set());
-  };
+  }, []);
 
-  const handleClickOutside = () => {
+  const handleClickOutside = useCallback(() => {
     setSelectedCells(new Set());
-  };
+  }, []);
 
   return (
     <div
@@ -77,17 +89,11 @@ const SelectableGrid = () => {
         {[...Array(gridSize * gridSize)].map((_, index) => {
           const row = Math.floor(index / gridSize);
           const col = index % gridSize;
-          const isSelected =
-            selectedCells.has(`${row}-${col}`) ||
-            hoveredCells.has(`${row}-${col}`);
+          const isSelected = selectedCells.has(`${row}-${col}`);
           return (
             <div
               key={`${row}-${col}`}
-              style={{
-                backgroundColor: isSelected ? "purple" : "white",
-                width: cellSize,
-                height: cellSize,
-              }}
+              style={{ width: cellSize, height: cellSize }}
               className={`border border-black ${
                 isSelected ? "bg-purple-500" : "bg-white"
               }`}
