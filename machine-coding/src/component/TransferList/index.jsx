@@ -22,9 +22,9 @@ function ItemList({ items, setItems }) {
           <input
             type="checkbox"
             checked={item.checked}
-            onChange={() => {
+            onChange={(e) => {
               const newItems = [...items];
-              newItems[index].checked = !newItems[index].checked;
+              newItems[index].checked = e.target.checked;
               setItems(newItems);
             }}
           />
@@ -39,7 +39,6 @@ export default function TransferList() {
   const [itemsLeft, setItemsLeft] = useState(DEFAULT_ITEMS_LEFT);
   const [itemsRight, setItemsRight] = useState(DEFAULT_ITEMS_RIGHT);
 
-  // Helper functions
   const hasSelected = (items) => items.some((item) => item.checked);
 
   const transferSelected = (from, setFrom, to, setTo) => {
