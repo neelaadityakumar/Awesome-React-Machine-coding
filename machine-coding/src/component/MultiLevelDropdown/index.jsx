@@ -12,12 +12,7 @@ const menuData = [
         submenu: [
           {
             label: "Sub Menu 4",
-            submenu: [
-              {
-                label: "Sub sub menu 1",
-              },
-              { label: "Sub sub menu 2" },
-            ],
+            submenu: [{ label: "Sub sub menu 1" }, { label: "Sub sub menu 2" }],
           },
         ],
       },
@@ -27,24 +22,23 @@ const menuData = [
 ];
 
 const DropdownItem = ({ item }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <li
       className="relative"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
     >
-      <div className="flex justify-between items-center px-4 py-2 hover:bg-gray-200 rounded-md cursor-pointer">
-        <span className="font-semibold">{item.label}</span>
-        {item.submenu && <span>▶</span>}
+      <div className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+        <span>{item.label}</span>
+        {item.submenu && <span className="ml-2 text-sm">▶</span>}
       </div>
 
-      {/* Nested submenu */}
-      {item.submenu && isOpen && (
-        <ul className="absolute left-full top-0 mt-0 ml-2 w-40 bg-white shadow-lg rounded-md border border-gray-200">
-          {item.submenu?.map((subItem, index) => (
-            <DropdownItem key={index} item={subItem} />
+      {item.submenu && open && (
+        <ul className="absolute top-0 left-full mt-0 w-40 bg-white border rounded shadow-md z-10">
+          {item.submenu.map((subItem, idx) => (
+            <DropdownItem key={idx} item={subItem} />
           ))}
         </ul>
       )}
@@ -54,9 +48,9 @@ const DropdownItem = ({ item }) => {
 
 export default function MultiLevelDropdown() {
   return (
-    <ul className="w-48 bg-white shadow-lg rounded-md border border-gray-200">
-      {menuData.map((item, index) => (
-        <DropdownItem key={index} item={item} />
+    <ul className="w-48 bg-white border rounded shadow-md p-1 space-y-1">
+      {menuData.map((item, idx) => (
+        <DropdownItem key={idx} item={item} />
       ))}
     </ul>
   );

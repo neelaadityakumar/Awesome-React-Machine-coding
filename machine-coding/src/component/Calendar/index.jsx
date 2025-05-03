@@ -34,7 +34,11 @@ const Calendar = () => {
           ◀
         </button>
         <div className="text-center font-bold text-lg">
-          {year} - {month + 1}
+          {currentMonthDate.toLocaleString("default", {
+            month: "long",
+
+            year: "numeric",
+          })}
         </div>
         <button
           className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
