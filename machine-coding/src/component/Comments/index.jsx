@@ -12,16 +12,16 @@ const CommentBox = ({ onSubmit }) => {
   };
 
   return (
-    <div className="p-2 border rounded mt-2">
+    <div className="bg-gray-50 p-3 border border-gray-300 rounded-lg mt-2">
       <input
         type="text"
         placeholder="Add a comment..."
-        className="p-2 border rounded w-full"
+        className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring focus:ring-blue-200"
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
       <button
-        className="bg-blue-500 text-white py-1 px-3 rounded mt-2 hover:bg-blue-600 transition"
+        className="bg-blue-600 text-white py-1 px-3 rounded mt-2 hover:bg-blue-700 transition"
         onClick={handleSubmit}
       >
         Submit
@@ -40,22 +40,20 @@ const Comment = ({ text }) => {
   };
 
   return (
-    <div className="p-2 mt-2 border rounded">
-      <div className="p-2">
-        <span>{text}</span>
-        <button
-          className="text-blue-500 text-sm ml-2 hover:underline"
-          onClick={() => setShowReplyBox((prev) => !prev)}
-        >
-          Reply
-        </button>
-      </div>
+    <div className="bg-white p-3 border border-gray-300 rounded-lg mt-3 shadow-sm">
+      <div className="text-sm text-gray-800">{text}</div>
+      <button
+        className="text-blue-500 text-xs mt-1 hover:underline"
+        onClick={() => setShowReplyBox((prev) => !prev)}
+      >
+        Reply
+      </button>
 
       {showReplyBox && <CommentBox onSubmit={addReply} />}
 
-      <div className="ml-4 pl-2 border-l mt-2">
+      <div className="ml-4 border-gray-200 pl-4 mt-2">
         {replies.map((reply, idx) => (
-          <Comment key={idx} text={reply} onReply={addReply} />
+          <Comment key={idx} text={reply} />
         ))}
       </div>
     </div>
@@ -71,9 +69,9 @@ const CommentContainer = () => {
 
   return (
     <div className="max-w-md mx-auto p-4">
-      <h2 className="text-xl font-bold mb-2">Comments</h2>
+      <h2 className="text-xl font-semibold mb-4">Comments</h2>
       <CommentBox onSubmit={addComment} />
-      <div className="mt-4 space-y-2">
+      <div className="mt-4 space-y-3">
         {comments.map((comment, index) => (
           <Comment key={index} text={comment} />
         ))}
