@@ -43,16 +43,7 @@ const PageRoutes = [
     path: "/file-explorer-crud",
     component: FileExplorerWithCrud,
   },
-  {
-    title: "Kanban Board",
-    path: "/kanban-board",
-    component: KanbanBoard,
-  },
-  {
-    title: "Kanban w/ task/board add",
-    path: "/kanban-board-crud",
-    component: KanBanWithTaskAndBoardAdd,
-  },
+
   {
     title: "Drag & Drop",
     path: "/drag-and-drop",
@@ -68,11 +59,7 @@ const PageRoutes = [
     path: "/traffic",
     component: Traffic,
   },
-  {
-    title: "Virtualization",
-    path: "/virtual",
-    component: Virtualization,
-  },
+
   {
     title: "Calendar",
     path: "/calendar",
@@ -115,11 +102,6 @@ const PageRoutes = [
   },
 
   {
-    title: "Memory Game",
-    path: "/memory-game",
-    component: MemoryGame,
-  },
-  {
     title: "Basic Carousel",
     path: "/basic-carousel",
     component: Carousel,
@@ -151,9 +133,7 @@ const PageRoutes = [
   },
   { title: "TicTacToe", path: "/TicTacToe", component: TicTacToe },
   { title: "TransferList", path: "/TransferList", component: TransferList },
-  { title: "PixelArt", path: "/PixelArt", component: PixelArt },
-  { title: "AnalogClock", path: "/AnalogClock", component: AnalogClock },
-  { title: "WhackAMole", path: "/WhackAMole", component: WhackAMole },
+
   {
     title: "NestedCheckbox",
     path: "/NestedCheckbox",
@@ -163,6 +143,30 @@ const PageRoutes = [
     title: "SelectableGrid",
     path: "/SelectableGrid",
     component: SelectableGrid,
+  },
+  {
+    title: "Kanban Board",
+    path: "/kanban-board",
+    component: KanbanBoard,
+  },
+  {
+    title: "Kanban w/ task/board add",
+    path: "/kanban-board-crud",
+    component: KanBanWithTaskAndBoardAdd,
+  },
+  {
+    title: "Memory Game",
+    path: "/memory-game",
+    component: MemoryGame,
+  },
+
+  { title: "PixelArt", path: "/PixelArt", component: PixelArt },
+  { title: "AnalogClock", path: "/AnalogClock", component: AnalogClock },
+  { title: "WhackAMole", path: "/WhackAMole", component: WhackAMole },
+  {
+    title: "Virtualization",
+    path: "/virtual",
+    component: Virtualization,
   },
 ];
 function App() {
