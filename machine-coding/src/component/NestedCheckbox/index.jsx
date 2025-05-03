@@ -1,27 +1,24 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const checkboxesData = [
+const data = [
   {
     id: 1,
     name: "Electronics",
-    checked: false,
     children: [
       {
         id: 2,
         name: "Mobile phones",
-        checked: false,
         children: [
-          { id: 3, name: "iPhone", checked: false },
-          { id: 4, name: "Android", checked: false },
+          { id: 3, name: "iPhone" },
+          { id: 4, name: "Android" },
         ],
       },
       {
         id: 5,
         name: "Laptops",
-        checked: false,
         children: [
-          { id: 6, name: "MacBook", checked: false },
-          { id: 7, name: "Surface Pro", checked: false },
+          { id: 6, name: "MacBook" },
+          { id: 7, name: "Surface Pro" },
         ],
       },
     ],
@@ -29,115 +26,103 @@ const checkboxesData = [
   {
     id: 8,
     name: "Books",
-    checked: false,
     children: [
-      { id: 9, name: "Fiction", checked: false },
-      { id: 10, name: "Non-fiction", checked: false },
+      { id: 9, name: "Fiction" },
+      { id: 10, name: "Non-fiction" },
     ],
   },
-  { id: 11, name: "Toys", checked: false },
+  { id: 11, name: "Toys" },
 ];
 
-const updateCheckboxState = (items, id, checked) => {
+function initialize(items) {
+  return items.map((item) => ({
+    ...item,
+    checked: false,
+    indeterminate: false,
+    children: item.children ? initialize(item.children) : undefined,
+  }));
+}
+
+function propagateDown(items, checked) {
+  return items.map((item) => ({
+    ...item,
+    checked,
+    indeterminate: false,
+    children: item.children ? propagateDown(item.children, checked) : undefined,
+  }));
+}
+
+function updateTree(items, id, checked) {
   return items.map((item) => {
     if (item.id === id) {
       return {
         ...item,
         checked,
+        indeterminate: false,
         children: item.children
-          ? updateCheckboxState(item.children, id, checked)
-          : item.children,
+          ? propagateDown(item.children, checked)
+          : undefined,
       };
     }
+
     if (item.children) {
+      const updatedChildren = updateTree(item.children, id, checked);
+      const all = updatedChildren.every((c) => c.checked);
+      const some = updatedChildren.some((c) => c.checked || c.indeterminate);
+
       return {
         ...item,
-        children: updateCheckboxState(item.children, id, checked),
+        checked: all,
+        indeterminate: !all && some,
+        children: updatedChildren,
       };
     }
+
     return item;
   });
-};
+}
 
-const propagateState = (items, checked) => {
-  return items.map((item) => ({
-    ...item,
-    checked,
-    children: item.children
-      ? propagateState(item.children, checked)
-      : item.children,
-  }));
-};
+function Checkbox({ item, onToggle }) {
+  const ref = useRef();
 
-const calculateState = (items) => {
-  const allChecked = items.every((item) => item.checked);
-  const someChecked = items.some((item) => item.checked || item.indeterminate);
-  return { checked: allChecked, indeterminate: someChecked && !allChecked };
-};
-
-const updateStates = (items) => {
-  return items.map((item) => {
-    if (item.children) {
-      const updatedChildren = updateStates(item.children);
-      const { checked, indeterminate } = calculateState(updatedChildren);
-      return { ...item, checked, indeterminate, children: updatedChildren };
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.indeterminate = item.indeterminate;
     }
-    return item;
-  });
-};
+  }, [item.indeterminate]);
 
-const NestedCheckbox = () => {
-  const [checkboxes, setCheckboxes] = useState(updateStates(checkboxesData));
+  return (
+    <div className="ml-4">
+      <label className="flex items-center gap-2">
+        <input
+          ref={ref}
+          type="checkbox"
+          className="w-4 h-4"
+          checked={item.checked}
+          onChange={(e) => onToggle(item.id, e.target.checked)}
+        />
+        {item.name}
+      </label>
+      {item.children &&
+        item.children.map((child) => (
+          <Checkbox key={child.id} item={child} onToggle={onToggle} />
+        ))}
+    </div>
+  );
+}
 
-  const handleCheckboxChange = (id, checked) => {
-    const updateTree = (items) => {
-      return items.map((item) => {
-        if (item.id === id) {
-          return {
-            ...item,
-            checked,
-            children: item.children
-              ? propagateState(item.children, checked)
-              : item.children,
-          };
-        }
-        if (item.children) {
-          return { ...item, children: updateTree(item.children) };
-        }
-        return item;
-      });
-    };
+export default function NestedCheckbox() {
+  const [tree, setTree] = useState(() => initialize(data));
 
-    let updatedCheckboxes = updateTree(checkboxes);
-    updatedCheckboxes = updateStates(updatedCheckboxes);
-    setCheckboxes(updatedCheckboxes);
-  };
-
-  const renderCheckboxes = (items) => {
-    return items.map((item) => (
-      <div key={item.id} className="ml-4">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={item.checked}
-            ref={(el) => el && (el.indeterminate = item.indeterminate || false)}
-            onChange={(e) => handleCheckboxChange(item.id, e.target.checked)}
-            className="w-4 h-4"
-          />
-          <span>{item.name}</span>
-        </label>
-        {item.children && (
-          <div className="ml-4">{renderCheckboxes(item.children)}</div>
-        )}
-      </div>
-    ));
+  const handleToggle = (id, checked) => {
+    setTree((prev) => updateTree(prev, id, checked));
   };
 
   return (
     <div className="p-4 border rounded-lg w-64 bg-gray-50">
-      {renderCheckboxes(checkboxes)}
+      {tree.map((item) => (
+        <Checkbox key={item.id} item={item} onToggle={handleToggle} />
+      ))}
     </div>
   );
-};
-
-export default NestedCheckbox;
+}
