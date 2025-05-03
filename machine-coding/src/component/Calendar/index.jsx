@@ -3,11 +3,11 @@ import React, { useState } from "react";
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentMonthDate, setCurrentMonthDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
+  const year = currentMonthDate.getFullYear();
+  const month = currentMonthDate.getMonth();
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   // Creates a new Date object for the 0th day of the next month.
@@ -21,7 +21,7 @@ const Calendar = () => {
   };
 
   const changeMonth = (offset) => {
-    setCurrentDate(new Date(year, month + offset, 1));
+    setCurrentMonthDate(new Date(year, month + offset, 1));
   };
 
   return (
