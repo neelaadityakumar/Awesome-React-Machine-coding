@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const config = {
+const defaultConfig = {
   red: {
     bgColor: "bg-red-500",
     duration: 4000,
@@ -18,30 +18,28 @@ const config = {
   },
 };
 
-function Light({ activeClass }) {
+function Light({ isActive, colorClass }) {
   return (
     <div
       aria-hidden="true"
-      className={`w-12 h-12 rounded-full ${activeClass} `}
+      className={`w-12 h-12 rounded-full transition-colors duration-300 ${
+        isActive ? colorClass : "bg-gray-500"
+      }`}
     />
   );
 }
 
 export function TrafficLight({
   initialColor = "green",
-  config,
+  config = defaultConfig,
   layout = "vertical",
 }) {
   const [currentColor, setCurrentColor] = useState(initialColor);
 
   useEffect(() => {
     const { duration, next } = config[currentColor];
-
-    const timerId = setTimeout(() => {
-      setCurrentColor(next);
-    }, duration);
-
-    return () => clearTimeout(timerId);
+    const timer = setTimeout(() => setCurrentColor(next), duration);
+    return () => clearTimeout(timer);
   }, [currentColor, config]);
 
   return (
@@ -52,12 +50,11 @@ export function TrafficLight({
         layout === "vertical" ? "flex-col" : "flex-row"
       }`}
     >
-      {Object.keys(config).map((color) => (
+      {Object.entries(config).map(([color, { bgColor }]) => (
         <Light
           key={color}
-          activeClass={
-            color === currentColor ? config[color].bgColor : "bg-gray-500"
-          }
+          isActive={color === currentColor}
+          colorClass={bgColor}
         />
       ))}
     </div>
@@ -67,8 +64,8 @@ export function TrafficLight({
 export default function TrafficLightGenerator() {
   return (
     <div className="flex flex-col items-center gap-6 p-4">
-      <TrafficLight config={config} />
-      <TrafficLight config={config} layout="horizontal" />
+      <TrafficLight config={defaultConfig} />
+      <TrafficLight config={defaultConfig} layout="horizontal" />
     </div>
   );
 }
