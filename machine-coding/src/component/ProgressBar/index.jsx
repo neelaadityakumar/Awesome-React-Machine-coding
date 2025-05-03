@@ -24,7 +24,7 @@ const ProgressBar = ({ max = 25, duration = 2000 }) => {
     <div className="bg-gray-200 h-4 w-96 rounded-md overflow-hidden">
       <div
         className="bg-green-500 h-full transition-all ease-linear"
-        style={{ width: `${progress}%` }}
+        style={{ width: `${(progress / max) * 100}%` }}
       />
     </div>
   );

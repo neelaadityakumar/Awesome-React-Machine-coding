@@ -118,11 +118,6 @@ const PageRoutes = [
     component: Smooth,
   },
   {
-    title: "Parallel Progress",
-    path: "/parallel-progress",
-    component: Simple,
-  },
-  {
     title: "Progress",
     path: "/progress",
     component: ProgressBar,
@@ -131,6 +126,11 @@ const PageRoutes = [
     title: "Smooth Progress",
     path: "/smooth-progress",
     component: SmoothProgress,
+  },
+  {
+    title: "Parallel Progress",
+    path: "/parallel-progress",
+    component: Simple,
   },
   {
     title: "OTP",

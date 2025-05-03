@@ -1,32 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const SmoothProgress = ({ max = 25, duration = 4000 }) => {
   const [progress, setProgress] = useState(0);
+  const startTimeRef = useRef(null);
+  const frameRef = useRef(null);
 
   useEffect(() => {
-    let startTime = null;
-    let animationFrameId;
+    const animate = (timestamp) => {
+      if (!startTimeRef.current) startTimeRef.current = timestamp;
 
-    const updateProgress = (timestamp) => {
-      if (startTime === null) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const nextProgress = Math.min((elapsed / duration) * max, max);
-      setProgress(nextProgress);
+      const elapsed = timestamp - startTimeRef.current;
+      const newProgress = Math.min((elapsed / duration) * max, max);
+      setProgress(newProgress);
 
       if (elapsed < duration) {
-        animationFrameId = requestAnimationFrame(updateProgress);
+        frameRef.current = requestAnimationFrame(animate);
       }
     };
 
-    animationFrameId = requestAnimationFrame(updateProgress);
+    frameRef.current = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(animationFrameId);
+    return () => {
+      cancelAnimationFrame(frameRef.current);
+      startTimeRef.current = null;
+    };
   }, [max, duration]);
 
   return (
-    <div className="bg-gray-200 h-4 w-96 rounded-md overflow-hidden">
+    <div className="w-96 h-4 bg-gray-300 rounded overflow-hidden">
       <div
-        className="bg-green-500 h-full transition-all ease-linear"
+        className="h-full bg-green-500 transition-all ease-linear"
         style={{ width: `${progress}%` }}
       />
     </div>
