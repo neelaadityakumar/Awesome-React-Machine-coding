@@ -6,7 +6,7 @@ const config = [
   [1, 1, 1],
 ];
 
-function Cell({ filled, label, onClick, isDisabled }) {
+function Cell({ filled, label, onClick, isDisabled, value }) {
   return (
     <button
       aria-label={label}
@@ -16,7 +16,9 @@ function Cell({ filled, label, onClick, isDisabled }) {
         disabled:opacity-50`}
       onClick={onClick}
       disabled={isDisabled}
-    />
+    >
+      {value}
+    </button>
   );
 }
 
@@ -51,6 +53,7 @@ export default function GridLight() {
           value ? (
             <Cell
               key={index}
+              value={index + 1}
               label={`Cell ${index}`}
               filled={order.includes(index)}
               isDisabled={order.includes(index) || isDeactivating}
