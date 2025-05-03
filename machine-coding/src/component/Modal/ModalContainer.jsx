@@ -1,31 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
 
-// Main Modal Component
-const Modal = ({ isOpen, closeModal }) => {
-  const modalContainerRef = useRef();
+const Modal = ({ isOpen, onClose, title = "Modal", children }) => {
+  const modalRef = useRef();
+  const [show, setShow] = useState(false);
 
-  // Handle click outside modal content
-  const handleClickOutside = (e) => {
-    if (
-      modalContainerRef.current &&
-      !modalContainerRef.current.contains(e.target)
-    ) {
-      closeModal();
-    }
-  };
-
-  // Add event listener for clicks outside the modal
+  // Close modal when clicking outside
   useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        onClose();
+      }
+    };
+
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      setShow(true);
+      document.addEventListener("mousedown", handleOutsideClick);
     } else {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleOutsideClick);
+      setShow(false);
     }
 
-    // Cleanup on unmount
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -33,58 +28,75 @@ const Modal = ({ isOpen, closeModal }) => {
   return (
     <>
       {/* Overlay */}
-      <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 z-40"></div>
-      {/* Modal Container */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+      {/* Modal Content */}
       <div
-        ref={modalContainerRef}
-        className="fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-1/2"
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        className={`fixed z-50 top-1/2 left-1/2
+           -translate-x-1/2 -translate-y-1/2
+          bg-white p-6 rounded-lg shadow-lg w-1/2
+          transition-all duration-[1000ms] ease-out
+          ${show ? "opacity-100 scale-100" : "opacity-0 scale-0"}`}
       >
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-lg font-bold">Modal</h1>
+          <h2 className="text-xl font-semibold">{title}</h2>
           <button
-            onClick={closeModal}
-            className="cursor-pointer hover:text-red-500 font-semibold text-lg"
+            onClick={onClose}
+            className="text-gray-500 hover:text-red-500 transition text-xl"
+            aria-label="Close modal"
           >
-            &#x2716;
+            &times;
           </button>
         </div>
-        <hr className="my-2" />
-        <p className="text-center mb-4 text-gray-700">
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s.
-        </p>
+        <hr className="mb-4" />
+        <div className="text-gray-700 text-sm">{children}</div>
       </div>
     </>
   );
 };
 
 const ModalContainer = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalOpen2, setIsModalOpen2] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-  const openModal2 = () => setIsModalOpen2(true);
-  const closeModal2 = () => setIsModalOpen2(false);
+  const openModal = (id) => setActiveModal(id);
+  const closeModal = () => setActiveModal(null);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen ">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 gap-4">
       <h1 className="text-3xl font-bold mb-4">React Modal with Tailwind</h1>
+
       <button
-        onClick={openModal}
-        className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        onClick={() => openModal(1)}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
-        Open Modal
-      </button>{" "}
-      <button
-        onClick={openModal2}
-        className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-      >
-        Open Modal
+        Open Modal 1
       </button>
-      {/* Modal Component */}
-      <Modal isOpen={isModalOpen} closeModal={closeModal} />
-      <Modal isOpen={isModalOpen2} closeModal={closeModal2} />
+
+      <button
+        onClick={() => openModal(2)}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Open Modal 2
+      </button>
+
+      <Modal
+        isOpen={activeModal === 1}
+        onClose={closeModal}
+        title="First Modal"
+      >
+        Lorem Ipsum is dummy text of the printing and typesetting industry.
+      </Modal>
+
+      <Modal
+        isOpen={activeModal === 2}
+        onClose={closeModal}
+        title="Second Modal"
+      >
+        This is another modal with separate content. Customize as needed.
+      </Modal>
     </div>
   );
 };
