@@ -8,6 +8,7 @@ import Calendar from "./component/Calendar";
 import FileExplorer from "./component/FileExplorer";
 import KanbanBoard from "./component/KanbanBoard";
 import DragAndDrop from "./component/DragAndDrop";
+import DragWithPlaceHolder from "./component/DragAndDrop/DragWithPlaceHolder";
 import MultiLevelDropDown from "./component/MultiLevelDropdown";
 import ModalContainer from "./component/Modal/ModalContainer";
 import GridLight from "./component/GridLight";
@@ -48,6 +49,11 @@ const PageRoutes = [
     title: "Drag & Drop",
     path: "/drag-and-drop",
     component: DragAndDrop,
+  },
+  {
+    title: "Drag & Drop placeholder",
+    path: "/drag-and-drop-placeholder",
+    component: DragWithPlaceHolder,
   },
   {
     title: "Toast",
