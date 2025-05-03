@@ -8,17 +8,13 @@ const initialDataSet = [
   {
     id: 2,
     name: "Women",
+    isOpen: false,
     children: [
       {
         id: 3,
         name: "Item 1",
-        children: [
-          {
-            id: 4,
-            name: "Dress",
-            children: [],
-          },
-        ],
+        isOpen: false,
+        children: [{ id: 4, name: "Dress", children: [] }],
       },
     ],
   },
@@ -27,6 +23,44 @@ const initialDataSet = [
 const FileExplorer = () => {
   const [dataSet, setDataSet] = useState(initialDataSet);
 
+  const toggleFolder = useCallback((id) => {
+    const toggle = (nodes) =>
+      nodes.map((node) => {
+        if (node.id === id) {
+          return { ...node, isOpen: !node.isOpen };
+        }
+        if (node.children) {
+          return { ...node, children: toggle(node.children) };
+        }
+        return node;
+      });
+    setDataSet((prev) => toggle(prev));
+  }, []);
+
+  const addItem = useCallback((parentId, name, isFolder) => {
+    const newItem = {
+      id: Date.now(),
+      name,
+      ...(isFolder ? { children: [], isOpen: false } : {}),
+    };
+
+    const updateTree = (nodes) =>
+      nodes.map((node) => {
+        if (node.id === parentId) {
+          const children = Array.isArray(node.children)
+            ? [...node.children, newItem]
+            : [newItem];
+          return { ...node, isOpen: true, children };
+        }
+        if (node.children) {
+          return { ...node, children: updateTree(node.children) };
+        }
+        return node;
+      });
+
+    setDataSet((prev) => updateTree(prev));
+  }, []);
+
   return (
     <div style={{ marginLeft: "16px" }}>
       {dataSet.map((node) =>
@@ -34,8 +68,8 @@ const FileExplorer = () => {
           <Folder
             key={node.id}
             node={node}
-            dataSet={dataSet}
-            updateData={setDataSet}
+            onAdd={addItem}
+            toggleOpen={toggleFolder}
           />
         ) : (
           <File key={node.id} node={node} />
@@ -49,140 +83,108 @@ const File = ({ node }) => (
   <div style={{ marginLeft: "24px", color: "#4A5568" }}>{node.name}</div>
 );
 
-const Folder = ({ node, dataSet, updateData }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Folder = ({ node, onAdd, toggleOpen }) => {
   const [showInput, setShowInput] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [isFolder, setIsFolder] = useState(true);
-
-  const toggleOpen = useCallback(() => {
-    setIsOpen((prev) => !prev);
-  }, []);
 
   const handleAddClick = (type) => {
     setShowInput(true);
     setIsFolder(type === "folder");
   };
 
-  const handleSubmit = (e) => {
-    e.stopPropagation();
+  const handleSubmit = () => {
     if (!newItemName.trim()) return;
-
-    if (!node.children) {
-      node.children = [];
-    }
-
-    node.children.push({
-      id: Date.now(),
-      name: newItemName,
-      children: isFolder ? [] : undefined,
-    });
-
+    onAdd(node.id, newItemName, isFolder);
     setNewItemName("");
     setShowInput(false);
-    updateData([...dataSet]);
   };
 
   return (
     <div style={{ marginLeft: "20px", marginBottom: "8px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center" }}>
         <div
-          style={{ cursor: "pointer" }}
-          onClick={toggleOpen}
+          onClick={() => toggleOpen(node.id)}
           role="button"
           tabIndex={0}
-          aria-expanded={isOpen}
+          aria-expanded={node.isOpen}
+          style={{ cursor: "pointer", userSelect: "none" }}
         >
-          <p>
-            {isOpen ? "-" : "+"} {node.name}{" "}
-          </p>
+          {node.children?.length > 0 ? (
+            <p>
+              {node.isOpen ? "-" : "+"} {node.name}
+            </p>
+          ) : (
+            <p>{node.name}</p>
+          )}
         </div>
 
-        <div>
+        <div style={{ marginLeft: "8px" }}>
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleAddClick("folder");
             }}
-            style={{
-              background: "none",
-              width: "20px",
-
-              color: "green",
-            }}
+            style={{ background: "none", color: "green", marginRight: "4px" }}
           >
-            +
+            +📁
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleAddClick("file");
             }}
-            style={{
-              background: "none",
-              color: "blue",
-              width: "20px",
-            }}
+            style={{ background: "none", color: "blue" }}
           >
-            +
+            +📄
           </button>
         </div>
-
-        {showInput && (
-          <div style={{ marginLeft: "24px", marginTop: "5px" }}>
-            <input
-              type="text"
-              value={newItemName}
-              onBlur={() => setShowInput(false)}
-              onChange={(e) => setNewItemName(e.target.value)}
-              placeholder={`Enter ${isFolder ? "folder" : "file"} name`}
-              style={{
-                padding: "4px",
-                fontSize: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                marginRight: "5px",
-              }}
-            />
-            <button
-              onClick={handleSubmit}
-              style={{
-                fontSize: "12px",
-                padding: "4px 8px",
-                cursor: "pointer",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                background: "#eee",
-              }}
-            >
-              Add
-            </button>
-          </div>
-        )}
       </div>
 
-      {isOpen && (
-        <div>
-          {node.children?.map((child) =>
-            Array.isArray(child.children) ? (
-              <Folder
-                key={child.id}
-                node={child}
-                dataSet={dataSet}
-                updateData={updateData}
-              />
-            ) : (
-              <File key={child.id} node={child} />
-            )
-          )}
+      {showInput && (
+        <div style={{ marginLeft: "24px", marginTop: "5px" }}>
+          <input
+            type="text"
+            value={newItemName}
+            onChange={(e) => setNewItemName(e.target.value)}
+            placeholder={`Enter ${isFolder ? "folder" : "file"} name`}
+            style={{
+              padding: "4px",
+              fontSize: "12px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              marginRight: "5px",
+            }}
+          />
+          <button
+            onClick={handleSubmit}
+            style={{
+              fontSize: "12px",
+              padding: "4px 8px",
+              cursor: "pointer",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              background: "#eee",
+            }}
+          >
+            Add
+          </button>
         </div>
       )}
+
+      {node.isOpen &&
+        node.children?.map((child) =>
+          Array.isArray(child.children) ? (
+            <Folder
+              key={child.id}
+              node={child}
+              onAdd={onAdd}
+              toggleOpen={toggleOpen}
+            />
+          ) : (
+            <File key={child.id} node={child} />
+          )
+        )}
     </div>
   );
 };
