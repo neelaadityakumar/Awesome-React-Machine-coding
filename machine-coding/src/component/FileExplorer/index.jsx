@@ -13,26 +13,12 @@ const dataSet = [
         id: 3,
         name: "Item 1",
         children: [
-          {
-            id: 4,
-            name: "Dress",
-            children: [],
-          },
-          {
-            id: 5,
-            name: "Shoes",
-            children: [],
-          },
+          { id: 4, name: "Dress", children: [] },
+          { id: 5, name: "Shoes", children: [] },
           {
             id: 6,
             name: "Toys",
-            children: [
-              {
-                id: 7,
-                name: "Toy 1",
-                children: [],
-              },
-            ],
+            children: [{ id: 7, name: "Toy 1", children: [] }],
           },
         ],
       },
@@ -40,16 +26,8 @@ const dataSet = [
         id: 8,
         name: "Item 2",
         children: [
-          {
-            id: 9,
-            name: "Folder 1",
-            children: [],
-          },
-          {
-            id: 10,
-            name: "Folder 2",
-            children: [],
-          },
+          { id: 9, name: "Folder 1", children: [] },
+          { id: 10, name: "Folder 2", children: [] },
         ],
       },
     ],
@@ -62,26 +40,15 @@ const dataSet = [
         id: 12,
         name: "Item 2",
         children: [
-          {
-            id: 13,
-            name: "Kurtis",
-            children: [],
-          },
-          {
-            id: 14,
-            name: "Frocks",
-            children: [],
-          },
-          {
-            id: 15,
-            name: "Shoes",
-            children: [],
-          },
+          { id: 13, name: "Kurtis", children: [] },
+          { id: 14, name: "Frocks", children: [] },
+          { id: 15, name: "Shoes", children: [] },
         ],
       },
     ],
   },
 ];
+
 const FileExplorer = () => {
   return (
     <div className="ml-4">
@@ -111,7 +78,6 @@ const Folder = ({ node }) => {
     <div className="ml-5 mb-2">
       <div
         onClick={toggleOpen}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggleOpen()}
         role="button"
         tabIndex={0}
         aria-expanded={isOpen}
