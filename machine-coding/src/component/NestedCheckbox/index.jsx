@@ -68,12 +68,13 @@ function updateTree(items, id, checked) {
     if (item.children) {
       const updatedChildren = updateTree(item.children, id, checked);
       const all = updatedChildren.every((c) => c.checked);
-      const some = updatedChildren.some((c) => c.checked || c.indeterminate);
+      const some =
+        !all && updatedChildren.some((c) => c.checked || c.indeterminate);
 
       return {
         ...item,
         checked: all,
-        indeterminate: !all && some,
+        indeterminate: some,
         children: updatedChildren,
       };
     }
