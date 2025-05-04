@@ -13,58 +13,52 @@ export default function KanbanBoard() {
   const [data, setData] = useState(initialData);
 
   const addTask = useCallback((content) => {
-    setData((prevData) => {
+    setData((prev) => {
       const newTask = { id: `task-${Date.now()}`, content };
       return {
-        ...prevData,
-        tasks: [...prevData.tasks, newTask],
+        tasks: [...prev.tasks, newTask],
         boards: {
-          ...prevData.boards,
-          todo: [...prevData.boards.todo, newTask.id],
+          ...prev.boards,
+          todo: [...prev.boards.todo, newTask.id],
         },
       };
     });
   }, []);
 
-  const onDragStart = (e, boardId, taskId) => {
+  const onDragStart = useCallback((e, boardId, taskId) => {
     e.dataTransfer.setData("taskId", taskId);
     e.dataTransfer.setData("sourceBoardId", boardId);
-  };
+  }, []);
 
-  const onDrop = (e, targetBoardId, targetIndex) => {
+  const onDrop = useCallback((e, targetBoardId, targetIndex) => {
     const taskId = e.dataTransfer.getData("taskId");
     const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
-
     if (!taskId || !sourceBoardId) return;
 
-    setData((prevData) => {
-      const newBoards = { ...prevData.boards };
+    setData((prev) => {
+      const boardsCopy = { ...prev.boards };
 
-      // Remove the task from its original board
-      newBoards[sourceBoardId] = newBoards[sourceBoardId].filter(
+      // Remove from source board
+      boardsCopy[sourceBoardId] = boardsCopy[sourceBoardId].filter(
         (id) => id !== taskId
       );
 
-      // Ensure targetIndex is valid
-      const updatedTargetBoard = [...newBoards[targetBoardId]];
-      if (
-        isNaN(targetIndex) ||
-        targetIndex < 0 ||
-        targetIndex > updatedTargetBoard.length
-      ) {
-        targetIndex = updatedTargetBoard.length; // Default to last position
-      }
+      // Safe target index
+      const newTargetBoard = [...boardsCopy[targetBoardId]];
+      const safeIndex = Math.max(
+        0,
+        Math.min(targetIndex, newTargetBoard.length)
+      );
+      newTargetBoard.splice(safeIndex, 0, taskId);
+      boardsCopy[targetBoardId] = newTargetBoard;
 
-      updatedTargetBoard.splice(targetIndex, 0, taskId); // Insert at the correct position
-      newBoards[targetBoardId] = updatedTargetBoard;
-
-      return { ...prevData, boards: newBoards };
+      return { ...prev, boards: boardsCopy };
     });
-  };
+  }, []);
 
   const getTasksForBoard = (boardId) =>
     data.boards[boardId]
-      .map((taskId) => data.tasks.find((task) => task.id === taskId))
+      .map((id) => data.tasks.find((t) => t.id === id))
       .filter(Boolean);
 
   return (
@@ -91,9 +85,9 @@ const Task = ({ task, boardId, onDragStart, onDrop, index }) => (
   <div
     className="bg-white border border-gray-300 rounded-lg p-3 shadow-md cursor-pointer hover:bg-gray-100 transition"
     draggable
-    onDrop={(e) => onDrop(e, boardId, index)}
-    onDragOver={(e) => e.preventDefault()}
     onDragStart={(e) => onDragStart(e, boardId, task.id)}
+    onDragOver={(e) => e.preventDefault()}
+    onDrop={(e) => onDrop(e, boardId, index)}
   >
     {task.content}
   </div>
@@ -103,14 +97,14 @@ const Board = ({ title, tasks, boardId, onDragStart, onDrop }) => (
   <div className="bg-gray-200 p-4 rounded-lg w-80 min-h-[400px]">
     <h3 className="text-xl font-semibold mb-3 capitalize">{title}</h3>
     <div className="bg-white rounded-lg p-3 min-h-[350px] flex flex-col">
-      {tasks.map((task, index) => (
+      {tasks.map((task, i) => (
         <Task
           key={task.id}
           task={task}
           boardId={boardId}
           onDragStart={onDragStart}
           onDrop={onDrop}
-          index={index}
+          index={i}
         />
       ))}
       <div
@@ -123,21 +117,22 @@ const Board = ({ title, tasks, boardId, onDragStart, onDrop }) => (
 );
 
 const TaskForm = ({ addTask }) => {
-  const [taskContent, setTaskContent] = useState("");
+  const [content, setContent] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!taskContent.trim()) return;
-    addTask(taskContent);
-    setTaskContent("");
+    const trimmed = content.trim();
+    if (!trimmed) return;
+    addTask(trimmed);
+    setContent("");
   };
 
   return (
     <form onSubmit={handleSubmit} className="mb-6 flex gap-3">
       <input
         type="text"
-        value={taskContent}
-        onChange={(e) => setTaskContent(e.target.value)}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
         placeholder="Add a new task"
         className="border border-gray-300 p-2 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
