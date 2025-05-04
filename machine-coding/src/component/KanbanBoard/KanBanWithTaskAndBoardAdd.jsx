@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 
 const initialData = {
   tasks: [],
@@ -10,20 +10,11 @@ const initialData = {
 };
 
 export default function KanbanBoard() {
-  const [data, setData] = useState(() => {
-    const savedData = localStorage.getItem("kanbanData");
-    return savedData ? JSON.parse(savedData) : initialData;
-  });
-
+  const [data, setData] = useState(initialData);
   const [newBoardName, setNewBoardName] = useState("");
-
-  useEffect(() => {
-    localStorage.setItem("kanbanData", JSON.stringify(data));
-  }, [data]);
-
   const addTask = useCallback((content, boardId) => {
+    const newTask = { id: `task-${Date.now()}`, content };
     setData((prevData) => {
-      const newTask = { id: `task-${Date.now()}`, content };
       return {
         ...prevData,
         tasks: [...prevData.tasks, newTask],
@@ -53,7 +44,6 @@ export default function KanbanBoard() {
   };
 
   const onDrop = (e, targetBoardId, targetIndex) => {
-    e.preventDefault();
     const taskId = e.dataTransfer.getData("taskId");
     const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
     if (!taskId || !sourceBoardId) return;
@@ -136,7 +126,7 @@ const Task = ({ task, boardId, onDragStart, onDrop, index }) => (
 const Board = ({ title, tasks, boardId, onDragStart, onDrop }) => (
   <div className="bg-gray-200 p-4 rounded-lg w-80 min-h-[400px] min-w-[300px]">
     <h3 className="text-xl font-semibold mb-3 capitalize">{title}</h3>
-    <div className="bg-white rounded-lg p-3 min-h-[350px]">
+    <div className="bg-white rounded-lg p-3 min-h-[350px] flex flex-col">
       {tasks.map((task, index) => (
         <Task
           key={task.id}
@@ -148,7 +138,7 @@ const Board = ({ title, tasks, boardId, onDragStart, onDrop }) => (
         />
       ))}
       <div
-        className="bg-red-400 w-full h-10 mt-2 rounded-lg"
+        className="bg-red-400 w-full h-10 mt-2 rounded-lg flex-1"
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => onDrop(e, boardId, 0)}
       />
