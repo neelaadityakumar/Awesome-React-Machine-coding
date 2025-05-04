@@ -145,11 +145,7 @@ const PageRoutes = [
     path: "/NestedCheckbox",
     component: NestedCheckbox,
   },
-  {
-    title: "SelectableGrid",
-    path: "/SelectableGrid",
-    component: SelectableGrid,
-  },
+
   {
     title: "Kanban Board",
     path: "/kanban-board",
@@ -166,8 +162,14 @@ const PageRoutes = [
     component: MemoryGame,
   },
 
-  { title: "PixelArt", path: "/PixelArt", component: PixelArt },
   { title: "AnalogClock", path: "/AnalogClock", component: AnalogClock },
+  {
+    title: "SelectableGrid",
+    path: "/SelectableGrid",
+    component: SelectableGrid,
+  },
+  { title: "PixelArt", path: "/PixelArt", component: PixelArt },
+
   { title: "WhackAMole", path: "/WhackAMole", component: WhackAMole },
   {
     title: "Virtualization",
